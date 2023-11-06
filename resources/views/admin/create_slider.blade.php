@@ -29,24 +29,22 @@
                                     <input type="file" name="slider_image" class="form-control-file">
                                 </div>
 
-                                <div class="form-group col-12">
+                                <!-- <div class="form-group col-12">
                                     <label>{{__('admin.Badge')}} <span class="text-danger">*</span></label>
                                     <input type="text" name="badge" class="form-control">
-                                </div>
+                                </div> -->
 
                                 <div class="form-group col-12">
-                                    <label>{{__('admin.Title One')}} <span class="text-danger">*</span></label>
+                                    <label>{{__('admin.Sub Title')}} <span class="text-danger">*</span></label>
                                     <input type="text" name="title_one" class="form-control">
                                 </div>
 
-
-
                                 <div class="form-group col-12">
-                                    <label>{{__('admin.Title Two')}} <span class="text-danger">*</span></label>
+                                    <label>{{__('admin.Title')}} <span class="text-danger">*</span></label>
                                     <input type="text" name="title_two" class="form-control">
                                 </div>
 
-                                <div class="form-group col-12">
+                                <!-- <div class="form-group col-12">
                                     <label>{{__('admin.Product Link')}} <span class="text-danger">*</span></label>
                                     <select name="product_slug" id="" class="form-control select2">
                                         <option value="">{{__('admin.Select Product')}}</option>
@@ -54,8 +52,27 @@
                                             <option value="{{ $product->slug }}">{{ $product->name }}</option>
                                         @endforeach
                                     </select>
+                                </div> -->
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Description')}}</label>
+                                    <input type="text" name="description" class="form-control">
                                 </div>
-
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Button Text(left)')}}</label>
+                                    <input type="text" name="btn_text1" class="form-control">
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Button Text(right)')}}</label>
+                                    <input type="text" name="btn_text2" class="form-control">
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Button Url(left)')}}</label>
+                                    <input type="text" name="btn_url1" class="form-control">
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Button Url(right)')}}</label>
+                                    <input type="text" name="btn_url2" class="form-control">
+                                </div>
                                 <div class="form-group col-12">
                                     <label>{{__('admin.Serial')}} <span class="text-danger">*</span></label>
                                     <input type="number" name="serial" class="form-control">

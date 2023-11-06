@@ -28,12 +28,10 @@ class SliderController extends Controller
     public function store(Request $request){
         $rules = [
             'slider_image' => 'required',
-            'product_slug' => 'required',
             'status' => 'required',
             'serial' => 'required',
             'title_one' => 'required',
             'title_two' => 'required',
-            'badge' => 'required',
         ];
         $customMessages = [
             'slider_image.required' => trans('admin_validation.Slider image is required'),
@@ -63,6 +61,11 @@ class SliderController extends Controller
         $slider->title_one = $request->title_one;
         $slider->title_two = $request->title_two;
         $slider->badge = $request->badge;
+        $slider->btn_text1 = $request->btn_text1;
+        $slider->btn_text2 = $request->btn_text2;
+        $slider->btn_url1 = $request->btn_url1;
+        $slider->btn_url2 = $request->btn_url2;
+        $slider->description = $request->description;
         $slider->save();
 
         $notification= trans('admin_validation.Created Successfully');
@@ -83,12 +86,10 @@ class SliderController extends Controller
 
     public function update(Request $request, $id){
         $rules = [
-            'product_slug' => 'required',
             'status' => 'required',
             'serial' => 'required',
             'title_one' => 'required',
             'title_two' => 'required',
-            'badge' => 'required',
 
         ];
         $customMessages = [
@@ -119,6 +120,11 @@ class SliderController extends Controller
         $slider->title_one = $request->title_one;
         $slider->title_two = $request->title_two;
         $slider->badge = $request->badge;
+        $slider->btn_text1 = $request->btn_text1;
+        $slider->btn_text2 = $request->btn_text2;
+        $slider->btn_url1 = $request->btn_url1;
+        $slider->btn_url2 = $request->btn_url2;
+        $slider->description = $request->description;
         $slider->save();
 
         $notification= trans('admin_validation.Update Successfully');

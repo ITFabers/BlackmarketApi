@@ -66,9 +66,6 @@ use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\AdvertisementController;
 use App\Http\Controllers\Admin\FlashSaleController;
 
-
-
-
 use App\Http\Controllers\Seller\SellerDashboardController;
 use App\Http\Controllers\Seller\SellerProfileController;
 use App\Http\Controllers\Seller\SellerProductController;
@@ -80,9 +77,6 @@ use App\Http\Controllers\Seller\WithdrawController;
 use App\Http\Controllers\Seller\SellerProductReportControler;
 use App\Http\Controllers\Seller\SellerOrderController;
 use App\Http\Controllers\Seller\SellerMessageContoller;
-
-
-
 
 
 use App\Http\Controllers\HomeController;
@@ -99,7 +93,6 @@ use App\Http\Controllers\EmailController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-
 
 Route::post('send-email', [EmailController::class, 'course']);
 Route::post('send-contact-email', [EmailController::class, 'contact']);
@@ -136,9 +129,15 @@ Route::group([], function () {
     Route::get('/sub-category/{id}', [HomeController::class, 'subCategory'])->name('sub-category');
     Route::get('/child-category/{id}', [HomeController::class, 'childCategory'])->name('child-category');
 
+    Route::get('/slider',[HomeController::class,'getSlider'])->name('sliders');
+    Route::get('/footer',[HomeController::class,'getFooter'])->name('footer');
+    Route::get('/wishlist',[HomeController::class,'wishlist'])->name('wishlist');
+    Route::get('/partners',[HomeController::class,'partners'])->name('partners');
+    Route::get('/search-menu',[HomeController::class,'searchPr'])->name('pr-search');
+
     Route::get('/product-by-category/{id}', [HomeController::class, 'productByCategory'])->name('product-by-category');
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/', [HomeController::class, 'index']);
     Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us');
     Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('contact-us');
     Route::post('/send-contact-message', [HomeController::class, 'sendContactMessage'])->name('send-contact-message');
@@ -344,8 +343,8 @@ Route::group([], function () {
 Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
 
     // start auth route
-    Route::get('login', [AdminLoginController::class,'adminLoginPage'])->name('login');
-    Route::post('login', [AdminLoginController::class,'storeLogin'])->name('login');
+    Route::get('login', [AdminLoginController::class,'adminLoginPage']);
+    Route::post('login', [AdminLoginController::class,'storeLogin']);
     Route::post('logout', [AdminLoginController::class,'adminLogout'])->name('logout');
     Route::get('forget-password', [AdminForgotPasswordController::class,'forgetPassword'])->name('forget-password');
     Route::post('send-forget-password', [AdminForgotPasswordController::class,'sendForgetEmail'])->name('send.forget.password');
@@ -354,7 +353,7 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     // end auth route
 
     Route::get('/', [DashboardController::class,'dashobard'])->name('dashboard');
-    Route::get('dashboard', [DashboardController::class,'dashobard'])->name('dashboard');
+    Route::get('dashboard', [DashboardController::class,'dashobard']);
     Route::get('profile', [AdminProfileController::class,'index'])->name('profile');
     Route::put('profile-update', [AdminProfileController::class,'update'])->name('profile.update');
 
@@ -439,7 +438,7 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
 
 
 
-    Route::get('clear-database',[SettingController::class,'showClearDatabasePage'])->name('clear-database');
+    Route::get('clear-database',[SettingController::class,'showClearDatabasePage']);
     Route::delete('clear-database',[SettingController::class,'clearDatabase'])->name('clear-database');
 
     Route::get('subscriber',[SubscriberController::class,'index'])->name('subscriber');

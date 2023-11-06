@@ -16,6 +16,8 @@ use App\Models\Brand;
 
 use App\Models\Slider;
 
+use App\Models\Partner;
+
 use App\Models\Category;
 
 use App\Models\SubCategory;
@@ -84,6 +86,8 @@ use App\Models\GoogleRecaptcha;
 
 use App\Models\Order;
 
+use App\Models\Wishlist;
+
 use App\Models\ShopPage;
 
 use App\Models\SeoSetting;
@@ -106,7 +110,7 @@ use Carbon\Carbon;
 
 use Route;
 
-
+use Auth;
 
 use App\Models\FooterSocialLink;
 
@@ -361,7 +365,82 @@ class HomeController extends Controller
 
     }
 
+    public function wishlist(){
+        $user = Auth::guard('api')->user();
+        $wishlists = Wishlist::with('product')->where(['user_id' => $user->id])->paginate(10);
 
+        return response()->json(['wishlists' => $wishlists]);
+    }
+    public function partners(){
+
+        $partners = Partner::orderBy('serial','asc')->where(['status' => 1])->get();
+
+        return response()->json(['partners' => $partners]);
+    }
+    public function getFooter()
+    {
+      $first_col_links = FooterLink::where('column',1)->get();
+
+      $footer = Footer::first();
+
+      $columnTitle = $footer->first_column;
+
+      $footer_first_col = array(
+
+          'col_links' => $first_col_links,
+
+          'columnTitle' => $columnTitle
+
+      );
+
+      $footer_first_col = (object)$footer_first_col;
+
+
+
+      $second_col_links = Blog::where(['status' => 1])->latest()->take(3)->get();
+
+      $columnTitle = $footer->second_column;
+
+      $footer_second_col = array(
+
+          'col_links' => $second_col_links,
+
+          'columnTitle' => $columnTitle
+
+      );
+
+      $footer_second_col = (object)$footer_second_col;
+
+
+
+      $third_col_links = FooterLink::where('column',3)->get();
+
+      $columnTitle = $footer->third_column;
+
+      $footer_third_col = array(
+
+          'col_links' => $third_col_links,
+
+          'columnTitle' => $columnTitle
+
+      );
+
+      $footer_third_col = (object)$footer_third_col;
+
+
+
+      $social_links = FooterSocialLink::all();
+      return response()->json([
+        'footer_first_col' => $footer_first_col,
+
+        'footer_second_col' => $footer_second_col,
+
+        'footer_third_col' => $footer_third_col,
+
+        'footer' => $footer
+      ]);
+
+    }
 
     public function subCategoriesByCategory($id){
 
@@ -436,8 +515,12 @@ class HomeController extends Controller
     }
 
 
+    public function getSlider()
+    {
+      $sliders = Slider::orderBy('serial','asc')->where(['status' => 1])->get();
+      return response()->json(['sliders' => $sliders]);
 
-
+    }
 
     public function index()
 
@@ -847,9 +930,9 @@ class HomeController extends Controller
 
         $blog = Blog::where(['status' => 1, 'slug'=>$slug])->first();
 
-        $blog->views += 1;
+        // $blog->views += 1;
 
-        $blog->save();
+        // $blog->save();
 
 
 
@@ -866,8 +949,10 @@ class HomeController extends Controller
 
 
         $paginateQty = CustomPagination::whereId('4')->first()->qty;
-
-        $activeComments = BlogComment::where('blog_id', $blog->id)->orderBy('id','desc')->paginate($paginateQty);
+        $activeComments =[];
+        if ($blog) {
+          $activeComments = BlogComment::where('blog_id', $blog->id)->orderBy('id','desc')->paginate($paginateQty);
+        }
 
 
 
@@ -1644,10 +1729,20 @@ class HomeController extends Controller
     }
 
 
+    public function searchPr(Request $request)
+    {
+      $products = [];
+      if($request->search){
 
+          $products = Product::where('name', 'LIKE', '%'. $request->search. "%")->orWhere('long_description','LIKE','%'.$request->search.'%')->get();
+
+      }
+      return response()->json(['products' => $products]);
+
+    }
     public function productDetail($slug){
 
-        $product = Product::with('brand','avgReview')->where(['status' => 1, 'slug' => $slug])->first();
+        $product = Product::where(['status' => 1, 'slug' => $slug])->first();
 
 
 

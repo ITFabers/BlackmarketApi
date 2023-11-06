@@ -88,6 +88,7 @@ use App\Http\Controllers\WEB\Admin\DeliveryManWithdrawController;
 use App\Http\Controllers\WEB\Admin\MegaMenuSubCategoryController;
 use App\Http\Controllers\WEB\Seller\SellerProductReportControler;
 
+use App\Http\Controllers\WEB\Admin\PartnerController;
 use App\Http\Controllers\WEB\Admin\AdminUsersController;
 
 use App\Http\Controllers\WEB\Seller\SellerProductReviewController;
@@ -218,14 +219,14 @@ Route::group(['middleware' => ['maintainance']], function () {
         return redirect()->route('admin.login');
     })->name('home');
 
-    Route::get('seller/login', [SellerLoginController::class,'sellerLoginPage'])->name('seller.login');
+    Route::get('seller/login', [SellerLoginController::class,'sellerLoginPage']);
     Route::post('seller/login', [SellerLoginController::class,'storeLogin'])->name('seller.login');
     Route::get('seller/logout', [SellerLoginController::class,'adminLogout'])->name('seller.logout');
 
     Route::group(['as'=> 'seller.', 'prefix' => 'seller'],function (){
-        Route::get('dashboard',[SellerDashboardController::class,'index'])->name('dashboard');
-        Route::get('my-profile',[SellerProfileController::class,'index'])->name('my-profile');
-        Route::get('state-by-country/{id}',[SellerProfileController::class,'stateByCountry'])->name('state-by-country');
+        Route::get('dashboard',[SellerDashboardController::class,'index']);
+        Route::get('my-profile',[SellerProfileController::class,'index'])->name('seller.my-profile');
+        Route::get('state-by-country/{id}',[SellerProfileController::class,'stateByCountry'])->name('seller.state-by-country');
         Route::get('city-by-state/{id}',[SellerProfileController::class,'cityByState'])->name('city-by-state');
         Route::put('update-seller-profile',[SellerProfileController::class,'updateSellerProfile'])->name('update-seller-profile');
         Route::get('change-password',[SellerProfileController::class,'changePassword'])->name('change-password');
@@ -421,8 +422,9 @@ Route::group(['as'=> 'admin.', 'prefix' => 'admin'],function (){
     Route::post('product-import',[ProductController::class,'product_import'])->name('product-import');
 
     Route::resource('product-variant', ProductVariantController::class);
+    Route::resource('partner', PartnerController::class);
 
-      Route::get('product-variant/{id}', [ProductVariantController::class,'index'])->name('product-variant');
+      Route::get('product-variant/{id}', [ProductVaPasswordriantController::class,'index'])->name('product-variant');
       Route::get('create-product-variant/{id}', [ProductVariantController::class,'create'])->name('create-product-variant');
       Route::post('store-product-variant', [ProductVariantController::class,'store'])->name('store-product-variant');
       Route::get('get-product-variant/{id}', [ProductVariantController::class,'show'])->name('get-product-variant');
