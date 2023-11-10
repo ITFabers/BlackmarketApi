@@ -97,17 +97,18 @@ use App\Http\Controllers\Auth\RegisterController;
 Route::post('send-email', [EmailController::class, 'course']);
 Route::post('send-contact-email', [EmailController::class, 'contact']);
 
-Route::group([
-    'prefix' => 'auth'
-
-], function ($router) {
-
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
-
-});
+// Route::group([
+//     'prefix' => 'auth'
+//
+// ], function ($router) {
+//
+//     Route::post('login', [AuthController::class, 'login']);
+//     Route::post('register', [AuthController::class, 'register']);
+//     Route::post('logout', [AuthController::class, 'logout'])->middleware('api');
+//     Route::post('refresh', [AuthController::class, 'refresh']);
+//     Route::post('me', [AuthController::class, 'me'])->middleware('api');
+//
+// });
 
 
 
@@ -134,6 +135,7 @@ Route::group([], function () {
     Route::get('/wishlist',[HomeController::class,'wishlist'])->name('wishlist');
     Route::get('/partners',[HomeController::class,'partners'])->name('partners');
     Route::get('/search-menu',[HomeController::class,'searchPr'])->name('pr-search');
+    Route::get('/all-products', [HomeController::class, 'products'])->name('products');
 
     Route::get('/product-by-category/{id}', [HomeController::class, 'productByCategory'])->name('product-by-category');
 
@@ -157,7 +159,7 @@ Route::group([], function () {
     Route::get('/sellers/{shop_name}', [HomeController::class, 'sellerDetail'])->name('seller-detail');
     Route::get('/product', [HomeController::class, 'product'])->name('product');
     Route::get('/variant-items-by-variant/{variant_name}', [HomeController::class, 'variantItemsByVariant'])->name('variant-items-by-variant');
-    Route::get('/search-product', [HomeController::class, 'searchProduct'])->name('search-product');
+    Route::post('/search-product', [HomeController::class, 'searchProduct'])->name('search-product');
     Route::get('/product/{slug}', [HomeController::class, 'productDetail'])->name('product-detail');
     Route::get('/product-review-list/{id}', [HomeController::class, 'productReviewList'])->name('product-review-list');
 

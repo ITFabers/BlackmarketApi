@@ -52,14 +52,18 @@ class LoginController extends Controller
         $rules = [
             'email'=>'required',
             'password'=>'required',
-            'g-recaptcha-response'=>new Captcha()
         ];
         $customMessages = [
             'email.required' => trans('user_validation.Email is required'),
             'password.required' => trans('user_validation.Password is required'),
         ];
-        $this->validate($request, $rules,$customMessages);
+        $validator = Validator::make($request->all(), $rules);
 
+        if ($validator->fails()) {
+              return response()->json(['message' => $validator->messages()]);
+
+
+          }
         $login_by = 'email';
         if(filter_var($request->email, FILTER_VALIDATE_EMAIL)){
             $login_by = 'email';
@@ -94,13 +98,13 @@ class LoginController extends Controller
                     if (! $token = Auth::guard('api')->attempt($credential, ['exp' => Carbon::now()->addDays(365)->timestamp])) {
                         return response()->json(['error' => 'Unauthorized'], 401);
                     }
-
+// $token = Auth::guard('api')->attempt($credential);
+// return $token;
                     if($login_by == 'email'){
                         $user = User::where('email',$request->email)->select('id','name','email','phone','image','status')->first();
                     }else{
                         $user = User::where('phone',$request->email)->select('id','name','email','phone','image','status')->first();
                     }
-
 
                     $isVendor = Vendor::where('user_id',$user->id)->first();
                     if($isVendor) {
@@ -147,13 +151,16 @@ class LoginController extends Controller
     public function sendForgetPassword(Request $request){
         $rules = [
             'email'=>'required',
-            'g-recaptcha-response'=>new Captcha()
+            // 'g-recaptcha-response'=>new Captcha()
         ];
         $customMessages = [
             'email.required' => trans('user_validation.Email is required'),
         ];
-        $this->validate($request, $rules,$customMessages);
+        $validator = Validator::make($request->all(), $rules);
 
+        if ($validator->fails()) {
+              return response()->json(['message' => $validator->messages()]);
+        }
         $user = User::where('email', $request->email)->first();
         if($user){
             $user->forget_password_token = random_int(100000, 999999);
@@ -239,7 +246,7 @@ class LoginController extends Controller
         $rules = [
             'email'=>'required',
             'password'=>'required|min:4|confirmed',
-            'g-recaptcha-response'=>new Captcha()
+            // 'g-recaptcha-response'=>new Captcha()
         ];
         $customMessages = [
             'email.required' => trans('user_validation.Email is required'),
@@ -247,8 +254,11 @@ class LoginController extends Controller
             'password.min' => trans('user_validation.Password must be 4 characters'),
             'password.confirmed' => trans('user_validation.Confirm password does not match'),
         ];
-        $this->validate($request, $rules,$customMessages);
+        $validator = Validator::make($request->all(), $rules);
 
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->messages()]);
+        }
         $user = User::where(['email' => $request->email, 'forget_password_token' => $token])->first();
         if($user){
             $user->password=Hash::make($request->password);
@@ -265,6 +275,8 @@ class LoginController extends Controller
 
     public function userLogout(){
         Auth::guard('api')->logout();
+
+
         $notification= trans('user_validation.Logout Successfully');
         return response()->json(['notification' => $notification],200);
     }

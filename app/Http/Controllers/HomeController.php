@@ -377,6 +377,13 @@ class HomeController extends Controller
 
         return response()->json(['partners' => $partners]);
     }
+    public function products(){
+
+        $products = Product::where(['status' => 1])->paginate(10);
+
+        return response()->json(['partners' => $products]);
+    }
+
     public function getFooter()
     {
       $first_col_links = FooterLink::where('column',1)->get();
@@ -1472,32 +1479,9 @@ class HomeController extends Controller
 
         $paginateQty = CustomPagination::whereId('2')->first()->qty;
 
-        if($request->variantItems){
+        $products = Product::query();
 
-            $products = Product::with('activeVariants.activeVariantItems')->whereHas('variantItems', function($query) use ($request){
-
-                $sortArr = [];
-
-                if($request->variantItems){
-
-                    foreach($request->variantItems as $variantItem){
-
-                        $sortArr[] = $variantItem;
-
-                    }
-
-                    $query->whereIn('name', $sortArr);
-
-                }
-
-            })->where('status',1)->where('approve_by_admin',1);
-
-        }else{
-
-            $products = Product::with('activeVariants.activeVariantItems')->where('status',1)->where('approve_by_admin', 1);
-
-        }
-
+        $products->with('attributes')->where('status',1)->where('approve_by_admin', 1);
 
 
         // if($request->shorting_id){
@@ -1518,7 +1502,7 @@ class HomeController extends Controller
         //
         // }else{
 
-            $products = $products->orderBy('id','desc');
+            $products->orderBy('id','desc');
 
         // }
 
@@ -1529,8 +1513,9 @@ class HomeController extends Controller
         if($request->category) {
 
             $category = Category::where('slug',$request->category)->first();
-
-            $products = $products->where('category_id', $category->id);
+            if ($category) {
+              $products->where('category_id', $category->id);
+            }
 
         }
 
@@ -1540,7 +1525,7 @@ class HomeController extends Controller
 
             $sub_category = SubCategory::where('slug',$request->sub_category)->first();
 
-            $products = $products->where('sub_category_id', $sub_category->id);
+            $products->where('sub_category_id', $sub_category->id);
 
         }
 
@@ -1550,7 +1535,7 @@ class HomeController extends Controller
 
             $child_category = ChildCategory::where('slug',$request->child_category)->first();
 
-            $products = $products->where('child_category_id', $child_category->id);
+          $products->where('child_category_id', $child_category->id);
 
         }
 
@@ -1560,7 +1545,7 @@ class HomeController extends Controller
 
             $brand = Brand::where('slug',$request->brand)->first();
 
-            $products = $products->where('brand_id', $brand->id);
+            $products->where('brand_id', $brand->id);
 
         }
 
@@ -1576,10 +1561,9 @@ class HomeController extends Controller
 
             }
 
-            $products = $products->whereIn('brand_id', $brandSortArr);
+            $products->whereIn('brand_id', $brandSortArr);
 
         }
-
 
 
         $categorySortArr = [];
@@ -1592,7 +1576,7 @@ class HomeController extends Controller
 
             }
 
-            $products = $products->whereIn('category_id', $categorySortArr);
+            $products->whereIn('category_id', $categorySortArr);
 
         }
 
@@ -1614,7 +1598,7 @@ class HomeController extends Controller
 
                 }
 
-                $products = $products->whereIn('category_id', $popularCategoryArr);
+                $products->whereIn('category_id', $popularCategoryArr);
 
             }
 
@@ -1622,7 +1606,7 @@ class HomeController extends Controller
 
             if($request->highlight == 'top_product'){
 
-                $products = $products->where('is_top',1);
+                $products->where('is_top',1);
 
             }
 
@@ -1630,7 +1614,7 @@ class HomeController extends Controller
 
             if($request->highlight == 'new_arrival'){
 
-                $products = $products->where('new_product',1);
+              $products->where('new_product',1);
 
             }
 
@@ -1638,7 +1622,7 @@ class HomeController extends Controller
 
             if($request->highlight == 'featured_product'){
 
-                $products = $products->where('is_featured',1);
+              $products->where('is_featured',1);
 
             }
 
@@ -1646,7 +1630,7 @@ class HomeController extends Controller
 
             if($request->highlight == 'best_product'){
 
-                $products = $products->where('is_best',1);
+              $products->where('is_best',1);
 
             }
 
@@ -1661,20 +1645,14 @@ class HomeController extends Controller
         if($request->min_price){
 
             if($request->min_price > 0){
-
-                $products = $products->where('price', '>=', $request->min_price);
-
+                $products->where('price', '>=', $request->min_price);
             }
 
         }
-
-
-
         if($request->max_price){
 
             if($request->max_price > 0){
-
-                $products = $products->where('price', '<=', $request->max_price);
+              $products->where('price', '<=', $request->max_price);
 
             }
 
@@ -1688,7 +1666,7 @@ class HomeController extends Controller
 
             $seller = Vendor::where(['slug' => $slug])->first();
 
-            $products = $products->where('vendor_id', $seller->id);
+             $products->where('vendor_id', $seller->id);
 
         }
 
@@ -1696,7 +1674,7 @@ class HomeController extends Controller
 
         if($request->search){
 
-            $products = $products->where('name', 'LIKE', '%'. $request->search. "%")
+          $products->where('name', 'LIKE', '%'. $request->search. "%")
 
                                 ->orWhere('long_description','LIKE','%'.$request->search.'%');
 
@@ -1704,25 +1682,25 @@ class HomeController extends Controller
 
 
 
-        $products = $products->select('id','name', 'short_name', 'slug', 'thumb_image','qty','sold_qty', 'price', 'offer_price','is_undefine','is_featured','new_product', 'is_top', 'is_best','category_id','sub_category_id','child_category_id','brand_id');
+         $products->select('id','name', 'short_name', 'slug', 'thumb_image','sold_qty', 'price', 'offer_price','is_undefine','is_featured','new_product', 'is_top', 'is_best','category_id','sub_category_id','child_category_id','brand_id');
 
         if($request->per_page){
 
-            $products = $products->paginate($request->per_page);
+            $products->paginate($request->per_page);
 
         }else{
 
-            $products = $products->paginate($paginateQty);
+          $products->paginate($paginateQty);
 
         }
 
 
 
-        $products = $products->appends($request->all());
+        $pr = $products->get();
 
 
 
-        return response()->json(['products' => $products]);
+        return response()->json(['products' => $pr]);
 
 
 

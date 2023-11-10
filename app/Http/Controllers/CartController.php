@@ -9,6 +9,8 @@ use App\Models\ProductVariantItem;
 use App\Models\Product;
 use App\Models\FlashSaleProduct;
 use App\Models\FlashSale;
+use App\Models\User;
+
 use App\Models\Coupon;
 use App\Models\Setting;
 use App\Models\ShoppingCart;
@@ -26,7 +28,9 @@ class CartController extends Controller
 
 
     public function cart(){
+        // $user =User::first();
         $user = Auth::guard('api')->user();
+
         $cartProducts = ShoppingCart::with('product','variants.variantItem')->where('user_id', $user->id)->select('id','product_id','qty')->get();
 
         return response()->json(['cartProducts' => $cartProducts],200);
@@ -34,7 +38,8 @@ class CartController extends Controller
 
     public function addToCart(Request $request){
 
-        $user = Auth::guard('api')->user();
+      // $user =User::first();
+      $user = Auth::guard('api')->user();
 
         // $itemExist = false;
         // $countProduct = ShoppingCart::where(['user_id' => $user->id, 'product_id' => $request->product_id])->count();
@@ -45,17 +50,7 @@ class CartController extends Controller
         // }
 
         $productStock = Product::find($request->product_id);
-        $stock = $productStock->qty - $productStock->sold_qty;
 
-        if($stock == 0){
-            $notification = trans('user_validation.Product stock out');
-            return response()->json(['message' => $notification],403);
-        }
-
-        if($stock < $request->quantity){
-            $notification = trans('user_validation.Quantity not available in our stock');
-            return response()->json(['message' => $notification],403);
-        }
 
         $item = new ShoppingCart();
         $item->user_id = $user->id;
@@ -118,6 +113,8 @@ class CartController extends Controller
 
     public function cartItemRemove($rowId){
         $user = Auth::guard('api')->user();
+        // $user =User::first();
+
         $cartProduct = ShoppingCart::where(['user_id' => $user->id, 'id' => $rowId])->first();
         ShoppingCartVariant::where('shopping_cart_id', $rowId)->delete();
         $cartProduct->delete();
@@ -128,6 +125,8 @@ class CartController extends Controller
 
     public function cartClear(){
         $user = Auth::guard('api')->user();
+        // $user =User::first();
+
         $cartProducts = ShoppingCart::where(['user_id' => $user->id])->get();
         foreach($cartProducts as $cartProduct){
             ShoppingCartVariant::where('shopping_cart_id', $cartProduct->id)->delete();
