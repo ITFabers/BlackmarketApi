@@ -2,55 +2,56 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\MailHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\Address;
 use App\Models\BannerImage;
+use App\Models\BillingAddress;
 use App\Models\Order;
 use App\Models\ProductReport;
 use App\Models\ProductReview;
-use App\Models\ShippingAddress;
-use App\Models\BillingAddress;
+use App\Models\User;
 use App\Models\Wishlist;
-use App\Helpers\MailHelper;
-use Mail;
-use App\Mail\SendSingleSellerMail;
-use Image;
 use File;
+use Illuminate\Http\Request;
+use Image;
+use Mail;
+
 class CustomerController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index(){
-        $customers = User::with('city','seller','state', 'country')->orderBy('id','desc')->where('status',1)->get();
+        $customers = User::with('city','state', 'country')->orderBy('id','desc')->where('status',1)->get();
         $defaultProfile = BannerImage::whereId('15')->first();
         $orders = Order::all();
 
-        return response()->json(['customers' => $customers, 'defaultProfile' => $defaultProfile, 'orders' => $orders], 200);
+        return view('admin.customer', compact('customers','defaultProfile','orders'));
     }
 
     public function pendingCustomerList(){
-        $customers = User::with('city','seller','state', 'country')->orderBy('id','desc')->where('status',0)->get();
+        $customers = User::with('city','state', 'country')->orderBy('id','desc')->where('status',0)->get();
         $defaultProfile = BannerImage::whereId('15')->first();
         $orders = Order::all();
 
-        return response()->json(['customers' => $customers, 'defaultProfile' => $defaultProfile, 'orders' => $orders], 200);
+        return view('admin.customer', compact('customers','defaultProfile','orders'));
 
     }
 
     public function show($id){
-        $customer = User::with('city','seller','state', 'country')->find($id);
+        $customer = User::with('city','state', 'country')->find($id);
         if($customer){
             $defaultProfile = BannerImage::whereId('15')->first();
 
-            return response()->json(['customer' => $customer, 'defaultProfile' => $defaultProfile], 200);
+            return view('admin.show_customer',compact('customer','defaultProfile'));
 
         }else{
-            $notification= trans('Something Went Wrong');
-            return response()->json(['notification' => $notification], 500);
+            $notification= trans('admin_validation.Something Went Wrong');
+            $notification=array('messege'=>$notification,'alert-type'=>'error');
+            return redirect()->route('admin.customer-list')->with($notification);
         }
 
     }
@@ -65,12 +66,12 @@ class CustomerController extends Controller
         }
         ProductReport::where('user_id',$id)->delete();
         ProductReview::where('user_id',$id)->delete();
-        ShippingAddress::where('user_id',$id)->delete();
-        BillingAddress::where('user_id',$id)->delete();
+        Address::where('user_id',$id)->delete();
         Wishlist::where('user_id',$id)->delete();
 
-        $notification = trans('Delete Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification = trans('admin_validation.Delete Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
 
     }
 
@@ -79,11 +80,11 @@ class CustomerController extends Controller
         if($customer->status == 1){
             $customer->status = 0;
             $customer->save();
-            $message = trans('Inactive Successfully');
+            $message = trans('admin_validation.Inactive Successfully');
         }else{
             $customer->status = 1;
             $customer->save();
-            $message = trans('Active Successfully');
+            $message = trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }
@@ -98,8 +99,8 @@ class CustomerController extends Controller
             'message'=>'required'
         ];
         $customMessages = [
-            'subject.required' => trans('Subject is required'),
-            'message.required' => trans('Message is required'),
+            'subject.required' => trans('admin_validation.Subject is required'),
+            'message.required' => trans('admin_validation.Message is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -109,8 +110,9 @@ class CustomerController extends Controller
             Mail::to($user->email)->send(new SendSingleSellerMail($request->subject,$request->message));
         }
 
-        $notification = trans('Email Send Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification = trans('admin_validation.Email Send Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function sendMailToSingleUser(Request $request, $id){
@@ -119,8 +121,8 @@ class CustomerController extends Controller
             'message'=>'required'
         ];
         $customMessages = [
-            'subject.required' => trans('Subject is required'),
-            'message.required' => trans('Message is required'),
+            'subject.required' => trans('admin_validation.Subject is required'),
+            'message.required' => trans('admin_validation.Message is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -128,8 +130,9 @@ class CustomerController extends Controller
         MailHelper::setMailConfig();
         Mail::to($user->email)->send(new SendSingleSellerMail($request->subject,$request->message));
 
-        $notification = trans('Email Send Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification = trans('admin_validation.Email Send Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 }

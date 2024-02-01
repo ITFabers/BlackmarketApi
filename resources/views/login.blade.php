@@ -70,26 +70,7 @@
                                                 <a class="forget_p" href="{{ route('forget-password') }}">{{__('forget password ?')}}</a>
                                         </div>
 
-                                        @if($recaptchaSetting->status==1)
-                                            <div class="col-xl-12">
-                                                <div class="wsus__single_com mb-3">
-                                                    <div class="g-recaptcha" data-sitekey="{{ $recaptchaSetting->site_key }}"></div>
-                                                </div>
-                                            </div>
-                                        @endif
-
                                         <button class="common_btn" type="submit">{{__('login')}}</button>
-                                        @if ($socialLogin->is_gmail == 1 || $socialLogin->is_facebook == 1)
-                                        <p class="social_text">{{__('Sign in with social account')}}</p>
-                                        <ul class="wsus__login_link">
-                                            @if ($socialLogin->is_gmail == 1)
-                                            <li><a href="{{ route('login-google') }}"><i class="fab fa-google"></i></a></li>
-                                            @endif
-                                            @if ($socialLogin->is_facebook == 1)
-                                            <li><a href="{{ route('login-facebook') }}"><i class="fab fa-facebook-f"></i></a></li>
-                                            @endif
-                                        </ul>
-                                        @endif
                                     </form>
                                 </div>
                             </div>
@@ -119,14 +100,6 @@
                                                 <label class="form-check-label" for="flexSwitchCheckDefault03">{{__('I consent to the privacy policy')}}</label>
                                                 </div>
                                         </div>
-
-                                        @if($recaptchaSetting->status==1)
-                                            <div class="col-xl-12">
-                                                <div class="wsus__single_com mb-3">
-                                                    <div class="g-recaptcha" data-sitekey="{{ $recaptchaSetting->site_key }}"></div>
-                                                </div>
-                                            </div>
-                                        @endif
 
                                         <button class="common_btn" type="submit">{{__('signup')}}</button>
                                     </form>

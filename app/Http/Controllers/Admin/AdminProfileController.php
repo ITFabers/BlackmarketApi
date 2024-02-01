@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Admin;
 use App\Models\BannerImage;
-use Hash;
 use Auth;
+use File;
+use Hash;
+use Illuminate\Http\Request;
 use Image;
 use Str;
-use File;
+
+
 class AdminProfileController extends Controller
 {
     public function __construct()
@@ -27,15 +28,15 @@ class AdminProfileController extends Controller
     public function update(Request $request){
         $admin=Auth::guard('admin')->user();
         $rules = [
-            'name'=>'required',
-            'email'=>'required|unique:admins,email,'.$admin->id,
+            // 'name'=>'required',
+            // 'email'=>'required|unique:admins,email,'.$admin->id,
             'password'=>'confirmed',
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'email.required' => trans('Email is required'),
-            'email.unique' => trans('Email already exist'),
-            'password.confirmed' => trans('Confirm password does not match'),
+            // 'name.required' => trans('admin_validation.Name is required'),
+            // 'email.required' => trans('admin_validation.Email is required'),
+            // 'email.unique' => trans('admin_validation.Email already exist'),
+            'password.confirmed' => trans('admin_validation.Confirm password does not match'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -63,11 +64,11 @@ class AdminProfileController extends Controller
         if($request->password){
             $admin->password=Hash::make($request->password);
         }
-        $admin->name=$request->name;
-        $admin->email=$request->email;
+        $admin->name=$request->name??$admin->name;
+        $admin->email=$request->email??$admin->email;
         $admin->save();
 
-        $notification= trans('Update Successfully');
+        $notification= trans('admin_validation.Update Successfully');
         $notification=array('messege'=>$notification,'alert-type'=>'success');
         return redirect()->route('admin.profile')->with($notification);
 

@@ -117,11 +117,6 @@
                             <td>{{ $required }}.{{__('You can put only numeric value')}}</td>
                         </tr>
 
-                        <tr>
-                            <td>{{__('Vendor Id')}}</td>
-                            <td>{{ $required }}. Haven't any seller or vendor please set 0</td>
-                        </tr>
-
 
                         <tr>
                             <td>{{__('Short description')}}</td>

@@ -4,23 +4,24 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
-use Illuminate\Http\Request;
-use  Image;
 use File;
+use Illuminate\Http\Request;
+use Image;
 use Str;
+
 class ProductBrandController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index()
     {
         $brands=Brand::all();
 
-        return response()->json(['brands' => $brands], 200);
+        return view('admin.product_brand',compact('brands'));
 
     }
 
@@ -39,11 +40,11 @@ class ProductBrandController extends Controller
             'logo' => 'required'
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'name.unique' => trans('Name already exist'),
-            'slug.required' => trans('Slug is required'),
-            'slug.unique' => trans('Slug already exist'),
-            'logo.required' => trans('Logo is required'),
+            'name.required' => trans('admin_validation.Name is required'),
+            'name.unique' => trans('admin_validation.Name already exist'),
+            'slug.required' => trans('admin_validation.Slug is required'),
+            'slug.unique' => trans('admin_validation.Slug already exist'),
+            'logo.required' => trans('admin_validation.Logo is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -61,8 +62,9 @@ class ProductBrandController extends Controller
         $brand->status = $request->status;
         $brand->save();
 
-        $notification = trans('Created Successfully');
-        return response()->json(['message' => $notification],200);
+        $notification = trans('admin_validation.Created Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.product-brand.index')->with($notification);
     }
 
 
@@ -86,16 +88,14 @@ class ProductBrandController extends Controller
         $rules = [
             'name' => 'required|unique:brands,name,'.$brand->id,
             'slug' => 'required|unique:brands,slug,'.$brand->id,
-            'rating' => 'required',
             'status' => 'required'
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'name.unique' => trans('Name already exist'),
-            'slug.required' => trans('Slug is required'),
-            'slug.unique' => trans('Slug already exist'),
-            'rating.required' => trans('Rating is required'),
-            'logo.required' => trans('Logo is required'),
+            'name.required' => trans('admin_validation.Name is required'),
+            'name.unique' => trans('admin_validation.Name already exist'),
+            'slug.required' => trans('admin_validation.Slug is required'),
+            'slug.unique' => trans('admin_validation.Slug already exist'),
+            'logo.required' => trans('admin_validation.Logo is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -116,11 +116,11 @@ class ProductBrandController extends Controller
         $brand->name = $request->name;
         $brand->slug = $request->slug;
         $brand->status = $request->status;
-        $brand->rating = $request->rating;
         $brand->save();
 
-        $notification = trans('Update Successfully');
-        return response()->json(['message' => $notification],200);
+        $notification = trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.product-brand.index')->with($notification);
     }
 
 
@@ -133,8 +133,9 @@ class ProductBrandController extends Controller
             if(File::exists(public_path().'/'.$old_logo))unlink(public_path().'/'.$old_logo);
         }
 
-        $notification = trans('Delete Successfully');
-        return response()->json(['message' => $notification],200);
+        $notification = trans('admin_validation.Delete Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.product-brand.index')->with($notification);
     }
 
     public function changeStatus($id){
@@ -142,11 +143,11 @@ class ProductBrandController extends Controller
         if($brand->status == 1){
             $brand->status = 0;
             $brand->save();
-            $message = trans('InActive Successfully');
+            $message = trans('admin_validation.InActive Successfully');
         }else{
             $brand->status = 1;
             $brand->save();
-            $message = trans('Active Successfully');
+            $message = trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }

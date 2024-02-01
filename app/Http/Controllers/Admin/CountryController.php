@@ -1,28 +1,35 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Exports\CountryExport;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Country;
+use App\Imports\CountryImport;
 use App\Models\BillingAddress;
+use App\Models\Country;
 use App\Models\ShippingAddress;
-use App\Models\User;
+use Exception;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Str;
+
 class CountryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index()
     {
-        $countries = Country::with('countryStates')->get();
-        $billingAddress = BillingAddress::with('country','countryState','city')->get();
-        $shippingAddress = ShippingAddress::with('country','countryState','city')->get();
-        $users = User::with('seller','city','state','country')->get();
+        $countries = Country::with('countryStates','addressCountires')->get();
 
-        return response()->json(['countries' => $countries, 'billingAddress' => $billingAddress, 'shippingAddress' => $shippingAddress, 'users' => $users], 200);
+        return view('admin.country', compact('countries'));
+    }
+
+
+    public function create()
+    {
+        return view('admin.create_country');
     }
 
 
@@ -33,8 +40,8 @@ class CountryController extends Controller
             'status'=>'required'
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'name.unique' => trans('Name already exist'),
+            'name.required' => trans('admin_validation.Name is required'),
+            'name.unique' => trans('admin_validation.Name already exist'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -44,8 +51,9 @@ class CountryController extends Controller
         $country->status = $request->status;
         $country->save();
 
-        $notification=trans('Created Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification=trans('admin_validation.Created Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 
@@ -53,6 +61,12 @@ class CountryController extends Controller
     {
         $country = Country::find($id);
         return response()->json(['country' => $country], 200);
+    }
+
+    public function edit($id)
+    {
+        $country = Country::find($id);
+        return view('admin.edit_country', compact('country'));
     }
 
     public function update(Request $request, $id)
@@ -63,8 +77,8 @@ class CountryController extends Controller
             'status'=>'required'
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'name.unique' => trans('Name already exist'),
+            'name.required' => trans('admin_validation.Name is required'),
+            'name.unique' => trans('admin_validation.Name already exist'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -73,8 +87,9 @@ class CountryController extends Controller
         $country->status = $request->status;
         $country->save();
 
-        $notification=trans('Updated Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification=trans('admin_validation.Updated Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.country.index')->with($notification);
     }
 
 
@@ -82,8 +97,9 @@ class CountryController extends Controller
     {
         $country = Country::find($id);
         $country->delete();
-        $notification=trans('Delete Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification=trans('admin_validation.Delete Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.country.index')->with($notification);
     }
 
     public function changeStatus($id){
@@ -91,12 +107,55 @@ class CountryController extends Controller
         if($country->status==1){
             $country->status=0;
             $country->save();
-            $message= trans('Inactive Successfully');
+            $message= trans('admin_validation.Inactive Successfully');
         }else{
             $country->status=1;
             $country->save();
-            $message= trans('Active Successfully');
+            $message= trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }
+
+
+    public function country_import_page()
+    {
+        return view('admin.country_import_page');
+    }
+
+    public function country_export()
+    {
+        $is_dummy = false;
+        return Excel::download(new CountryExport($is_dummy), 'countries.xlsx');
+    }
+
+    public function demo_country_export()
+    {
+        $is_dummy = true;
+        return Excel::download(new CountryExport($is_dummy), 'countries.xlsx');
+    }
+
+
+
+    public function country_import(Request $request)
+    {
+        try{
+            Excel::import(new CountryImport, $request->file('import_file'));
+
+            $notification=trans('Uploaded Successfully');
+            $notification=array('messege'=>$notification,'alert-type'=>'success');
+            return redirect()->back()->with($notification);
+        }catch(Exception $ex){
+            $notification=trans('Please follow the instruction and input the value carefully');
+            $notification=array('messege'=>$notification,'alert-type'=>'error');
+            return redirect()->back()->with($notification);
+        }
+
+
+    }
+
+
+
+
+
+
 }

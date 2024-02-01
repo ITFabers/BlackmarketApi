@@ -17,11 +17,9 @@ class Kernel extends HttpKernel
         // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \Fruitcake\Cors\HandleCors::class,
-        \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\Timezone::class,
         \App\Http\Middleware\Cors::class,
     ];
 
@@ -65,11 +63,6 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'maintainance' => \App\Http\Middleware\MaintainaceMode::class,
-        'checkseller' => \App\Http\Middleware\CheckSeller::class,
-        'demo' => \App\Http\Middleware\DemoHandler::class,
         'XSS' => \App\Http\Middleware\XSSProtection::class,
-        'deliveryman' => \App\Http\Middleware\DeliveryMan::class,
-        'deliverymanapi' => \App\Http\Middleware\DeliveryManApi::class,
     ];
 }

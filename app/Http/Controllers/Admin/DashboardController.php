@@ -3,28 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Blog;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Order;
-use App\Models\Setting;
 use App\Models\Product;
 use App\Models\ProductReport;
 use App\Models\ProductReview;
-use App\Models\Vendor;
+use App\Models\Setting;
 use App\Models\Subscriber;
 use App\Models\User;
-use App\Models\Blog;
-use App\Models\Category;
-use App\Models\Brand;
-use Carbon\Carbon;
+
 class DashboardController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function dashobard(){
-    
         $todayOrders = Order::with('user','orderProducts','orderAddress')->orderBy('id','desc')->whereDay('created_at', now()->day)->get();
 
         $todayTotalOrder = $todayOrders->count();
@@ -58,13 +55,13 @@ class DashboardController extends Controller
         $reviews = ProductReview::all();
         $reports = ProductReport::all();
         $users = User::all();
-        $sellers = Vendor::all();
         $subscribers = Subscriber::where('is_verified',1)->get();
         $blogs = Blog::all();
         $categories = Category::get();
         $brands = Brand::get();
 
-        return response()->json([
+
+        return view('admin.dashboard')->with([
             'todayOrders' => $todayOrders,
             'todayTotalOrder' => $todayTotalOrder,
             'todayPendingOrder' => $todayPendingOrder,
@@ -88,12 +85,14 @@ class DashboardController extends Controller
             'reviews' => $reviews->count(),
             'reports' => $reports->count(),
             'users' => $users->count(),
-            'sellers' => $sellers->count(),
             'subscribers' => $subscribers->count(),
             'blogs' => $blogs->count(),
             'categories' => $categories->count(),
             'brands' => $brands->count()
         ]);
+
+
+
 
     }
 

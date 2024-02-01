@@ -10,13 +10,11 @@
             <h1>{{__('admin.Email History')}}</h1>
             <div class="section-header-breadcrumb">
               <div class="breadcrumb-item active"><a href="{{ route('admin.dashboard') }}">{{__('admin.Dashboard')}}</a></div>
-              <div class="breadcrumb-item active"><a href="{{ route('admin.seller-show',$seller->id) }}">{{__('admin.Seller Profile')}}</a></div>
               <div class="breadcrumb-item">{{__('admin.Email History')}}</div>
             </div>
           </div>
 
           <div class="section-body">
-            <a href="{{ route('admin.seller-show',$seller->id) }}" class="btn btn-primary"><i class="fas fa-user"></i> {{ $user->name }}</a>
             <div class="row mt-4">
                 <div class="col">
                   <div class="card">

@@ -84,7 +84,7 @@
         $("#deleteForm").attr("action",'{{ url("admin/blog/") }}'+"/"+id)
     }
     function changeBlogStatus(id){
-        var isDemo = "{{ env('APP_VERSION') }}"
+        var isDemo = 1
         if(isDemo == 0){
             toastr.error('This Is Demo Version. You Can Not Change Anything');
             return;

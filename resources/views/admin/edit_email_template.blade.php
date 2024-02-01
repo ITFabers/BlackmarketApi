@@ -86,51 +86,6 @@
                                             </tr>
                                         @endif
 
-                                        @if ($template->id == 5)
-                                            <tr>
-                                                @php
-                                                    $name="{{seller_name}}";
-                                                @endphp
-                                                <td>{{ $name }}</td>
-                                                <td>{{__('admin.Seller Name')}}</td>
-                                            </tr>
-                                            <tr>
-                                                @php
-                                                    $method="{{withdraw_method}}";
-                                                @endphp
-                                                <td>{{ $method }}</td>
-                                                <td>{{__('admin.Withdraw method')}}</td>
-                                            </tr>
-                                            <tr>
-                                                @php
-                                                    $total_amount="{{total_amount}}";
-                                                @endphp
-                                                <td>{{ $total_amount }}</td>
-                                                <td>{{__('admin.Total amount')}}</td>
-                                            </tr>
-                                            <tr>
-                                                @php
-                                                    $withdraw_charge="{{withdraw_charge}}";
-                                                @endphp
-                                                <td>{{ $withdraw_charge }}</td>
-                                                <td>{{__('admin.Withdraw Charge')}}</td>
-                                            </tr>
-                                            <tr>
-                                                @php
-                                                    $withdraw_amount="{{withdraw_amount}}";
-                                                @endphp
-                                                <td>{{ $withdraw_amount }}</td>
-                                                <td>{{__('admin.Withdraw amount')}}</td>
-                                            </tr>
-                                            <tr>
-                                                @php
-                                                    $approval_date="{{approval_date}}";
-                                                @endphp
-                                                <td>{{ $approval_date }}</td>
-                                                <td>{{__('admin.Approval Date')}}</td>
-                                            </tr>
-                                        @endif
-
                                         @if ($template->id == 6)
                                             <tr>
                                                 @php
@@ -184,16 +139,6 @@
                                                 @endphp
                                                 <td>{{ $order_detail }}</td>
                                                 <td>{{__('admin.Order Detail')}}</td>
-                                            </tr>
-                                        @endif
-
-                                        @if ($template->id == 7)
-                                            <tr>
-                                                @php
-                                                    $name="{{name}}";
-                                                @endphp
-                                                <td>{{ $name }}</td>
-                                                <td>{{__('admin.Seller Name')}}</td>
                                             </tr>
                                         @endif
                                     </tbody>

@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
-
-use Illuminate\Http\Request;
-use App\Mail\AdminForgetPassword;
 use App\Helpers\MailHelper;
+use App\Http\Controllers\Controller;
+use App\Mail\AdminForgetPassword;
 use App\Models\Admin;
 use App\Models\EmailTemplate;
-use Str;
-use Mail;
-use Hash;
-use Auth;
 use App\Models\Setting;
+use Auth;
+use Hash;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Http\Request;
+use Mail;
+use Str;
+
 class AdminForgotPasswordController extends Controller
 {
     use SendsPasswordResetEmails;
@@ -32,7 +32,7 @@ class AdminForgotPasswordController extends Controller
         ];
 
         $customMessages = [
-            'email.required' => trans('Email is required'),
+            'email.required' => trans('admin_validation.Email is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -49,11 +49,11 @@ class AdminForgotPasswordController extends Controller
 
             Mail::to($admin->email)->send(new AdminForgetPassword($admin,$message,$subject));
 
-            $notification= trans('Forget password link send your email');
+            $notification= trans('admin_validation.Forget password link send your email');
             return response()->json(['notification' => $notification],200);
 
         }else {
-            $notification= trans('email does not exist');
+            $notification= trans('admin_validation.email does not exist');
             return response()->json(['notification' => $notification],400);
         }
     }
@@ -77,10 +77,10 @@ class AdminForgotPasswordController extends Controller
             'password'=>'required|confirmed|min:4'
         ];
         $customMessages = [
-            'email.required' => trans('Email is required'),
-            'password.required' => trans('Password is required'),
-            'password.confirmed' => trans('Password deos not match'),
-            'password.min' => trans('Password must be 4 characters'),
+            'email.required' => trans('admin_validation.Email is required'),
+            'password.required' => trans('admin_validation.Password is required'),
+            'password.confirmed' => trans('admin_validation.Password deos not match'),
+            'password.min' => trans('admin_validation.Password must be 4 characters'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -91,14 +91,14 @@ class AdminForgotPasswordController extends Controller
                 $admin->forget_password_token=null;
                 $admin->save();
 
-                $notification= trans('Password Reset Successfully');
+                $notification= trans('admin_validation.Password Reset Successfully');
                 return response()->json(['notification' => $notification],200);
             }else{
-                $notification= trans('Something went wrong');
+                $notification= trans('admin_validation.Something went wrong');
                 return response()->json(['notification' => $notification],400);
             }
         }else{
-            $notification= trans('Email or token does not exist');
+            $notification= trans('admin_validation.Email or token does not exist');
             return response()->json(['notification' => $notification],400);
         }
 

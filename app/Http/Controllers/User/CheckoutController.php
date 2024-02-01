@@ -4,27 +4,16 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\BreadcrumbImage;
 use Auth;
 use App\Models\Country;
-use App\Models\CountryState;
 use App\Models\City;
 use App\Models\Address;
-use App\Models\Vendor;
 use App\Models\Setting;
 use App\Models\Wishlist;
-use App\Models\StripePayment;
-use App\Models\RazorpayPayment;
-use App\Models\Flutterwave;
-use App\Models\PaystackAndMollie;
 use App\Models\BankPayment;
-use App\Models\InstamojoPayment;
-use App\Models\PaypalPayment;
-use App\Models\SslcommerzPayment;
 use App\Models\ShoppingCart;
 use App\Models\Coupon;
 use App\Models\Shipping;
-use App\Models\MyfatoorahPayment;
 use Cart;
 use Session;
 class CheckoutController extends Controller
@@ -60,16 +49,8 @@ class CheckoutController extends Controller
 
 
 
-        $stripePaymentInfo = StripePayment::first();
-        $razorpayPaymentInfo = RazorpayPayment::first();
-        $flutterwavePaymentInfo = Flutterwave::first();
-        $paypalPaymentInfo = PaypalPayment::first();
         $bankPaymentInfo = BankPayment::first();
 
-        $paystackAndMollie = PaystackAndMollie::first();
-        $instamojo = InstamojoPayment::first();
-        $sslcommerz = SslcommerzPayment::first();
-        $myfatoorah = MyfatoorahPayment::first();
 
 
         return response()->json([
@@ -77,15 +58,7 @@ class CheckoutController extends Controller
             'addresses' => $addresses,
             'shippings' => $shippings,
             'couponOffer' => $couponOffer,
-            'stripePaymentInfo' => $stripePaymentInfo,
-            'razorpayPaymentInfo' => $razorpayPaymentInfo,
-            'flutterwavePaymentInfo' => $flutterwavePaymentInfo,
-            'paypalPaymentInfo' => $paypalPaymentInfo,
             'bankPaymentInfo' => $bankPaymentInfo,
-            'paystackAndMollie' => $paystackAndMollie,
-            'instamojo' => $instamojo,
-            'sslcommerz' => $sslcommerz,
-            'myfatoorah' => $myfatoorah,
         ],200);
 
     }

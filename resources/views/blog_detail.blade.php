@@ -153,14 +153,6 @@
                                         </div>
                                     </div>
 
-                                    @if($recaptchaSetting->status==1)
-                                        <div class="col-xl-12">
-                                            <div class="wsus__single_com mb-3">
-                                                <div class="g-recaptcha" data-sitekey="{{ $recaptchaSetting->site_key }}"></div>
-                                            </div>
-                                        </div>
-                                    @endif
-
                                 </div>
                                 <button class="common_btn" type="submit">{{__('Submit Comment')}}</button>
                             </form>
@@ -217,11 +209,7 @@
             $(document).ready(function () {
                 $("#blogCommentForm").on('submit', function(e){
                     e.preventDefault();
-                    var isDemo = "{{ env('APP_VERSION') }}"
-                    if(isDemo == 0){
-                        toastr.error('This Is Demo Version. You Can Not Change Anything');
-                        return;
-                    }
+
                     $.ajax({
                         type: 'POST',
                         data: $('#blogCommentForm').serialize(),
@@ -236,10 +224,6 @@
                             if(response.responseJSON.errors.name)toastr.error(response.responseJSON.errors.name[0])
                             if(response.responseJSON.errors.email)toastr.error(response.responseJSON.errors.email[0])
                             if(response.responseJSON.errors.comment)toastr.error(response.responseJSON.errors.comment[0])
-
-                            if(!response.responseJSON.errors.name || !response.responseJSON.errors.email || !response.responseJSON.errors.comment){
-                                toastr.error("{{__('Please complete the recaptcha to submit the form')}}")
-                            }
                         }
                     });
                 })

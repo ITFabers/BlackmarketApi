@@ -22,9 +22,7 @@ class Product extends Model
         return $this->orderProducts()->sum('qty');
     }
 
-    public function seller(){
-        return $this->belongsTo(Vendor::class,'vendor_id');
-    }
+
 
     public function brand(){
         return $this->belongsTo(Brand::class);
@@ -38,9 +36,7 @@ class Product extends Model
         return $this->hasMany(ProductSpecification::class);
     }
 
-    public function reviews(){
-        return $this->hasMany(ProductReview::class);
-    }
+
 
     public function variants(){
         return $this->hasMany(ProductVariant::class);
@@ -65,9 +61,7 @@ class Product extends Model
         return $this->hasMany(ProductVariantItem::class);
     }
 
-    public function avgReview(){
-        return $this->hasMany(ProductReview::class)->where('status', 1);
-    }
+
 
     public function getCategory(){
         $productSubcategory = ProductSubcategory::where('product_id',$this->id)->first();
@@ -77,6 +71,23 @@ class Product extends Model
         return $cagt->name??'';
     }
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'product_subcategories', 'product_id', 'categories_ids');
+    }
+
+    public function getThumbImageAttribute($value)
+    {
+        if(empty($value))
+            return url('/') . '/uploads/custom-images/default.jpg';
+        // Check if the value already contains a full URL
+        if (is_string($value) && !str_starts_with($value, 'http://') && !str_starts_with($value, 'https://')) {
+            // Prepend the site URL to the thumb_image path
+            return (string)url($value);
+        }
+        return $value; // Return the original value if it's already a full URL
+    }
+
 
 
     protected $fillable = [
@@ -84,7 +95,6 @@ class Product extends Model
         'short_name',
         'slug',
         'thumb_image',
-        'vendor_id',
         'brand_id',
         'sold_qty',
         'short_description',

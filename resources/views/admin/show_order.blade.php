@@ -120,7 +120,7 @@
                           <span class="badge badge-danger">{{__('No response')}}</span>
                         @endif
                         </address>
-                      </div> 
+                      </div>
                       @endif
                     </div>
                   </div>
@@ -135,9 +135,6 @@
                           <th width="5%">#</th>
                           <th width="25%">{{__('admin.Product')}}</th>
                           <th width="20%">{{__('admin.Variant')}}</th>
-                          @if ($setting->enable_multivendor == 1)
-                          <th width="10%">{{__('admin.Shop Name')}}</th>
-                          @endif
                           <th width="10%" class="text-center">{{__('admin.Unit Price')}}</th>
                           <th width="10%" class="text-center">{{__('admin.Quantity')}}</th>
                           <th width="10%" class="text-right">{{__('admin.Total')}}</th>
@@ -163,13 +160,7 @@
                                     @endforeach
 
                                 </td>
-                                @if ($setting->enable_multivendor == 1)
-                                <td>
-                                    @if ($orderProduct->seller)
-                                        <a href="{{ route('admin.seller-show',$orderProduct->seller->id) }}">{{  $orderProduct->seller->shop_name }}</a>
-                                    @endif
-                                </td>
-                                @endif
+
                                 <td class="text-center">{{ $setting->currency_icon }}{{ $orderProduct->unit_price }}</td>
                                 <td class="text-center">{{ $orderProduct->qty }}</td>
                                 @php
@@ -224,7 +215,7 @@
                           <select name="delivery_man_id" id="" class="form-control select2">
                             <option value="0" {{ $order->order_status == 0 ? 'selected' : '' }}>Select</option>
                               @foreach ($deliverymans as $deliveryman)
-                              <option value="{{ $deliveryman->id }}" {{ $order->delivery_man_id == $deliveryman->id ? 'selected' : '' }}>{{ $deliveryman->fname }} {{ $deliveryman->lname }}</option>    
+                              <option value="{{ $deliveryman->id }}" {{ $order->delivery_man_id == $deliveryman->id ? 'selected' : '' }}>{{ $deliveryman->fname }} {{ $deliveryman->lname }}</option>
                               @endforeach
                           </select>
                         </div>

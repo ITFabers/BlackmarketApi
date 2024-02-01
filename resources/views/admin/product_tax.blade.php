@@ -91,7 +91,7 @@
         $("#deleteForm").attr("action",'{{ url("admin/product-tax/") }}'+"/"+id)
     }
     function changeProductTaxStatus(id){
-        var isDemo = "{{ env('APP_VERSION') }}"
+        var isDemo = 1
         if(isDemo == 0){
             toastr.error('This Is Demo Version. You Can Not Change Anything');
             return;

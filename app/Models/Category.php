@@ -13,4 +13,8 @@ class Category extends Model
       $childs = Category::where('parent_id',$this->id)->get();
       return $childs;
     }
+
+    public function takeProducts() {
+      return $this->belongsToMany(Product::class, 'product_subcategories', 'categories_ids', 'product_id')->oldest()->limit(10);
+    }
 }

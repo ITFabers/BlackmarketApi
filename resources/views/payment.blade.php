@@ -88,33 +88,6 @@
                     <div class="col-xl-2 col-lg-2">
                         <div class="wsus__payment_menu">
                             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                                @if ($stripe->status == 1)
-                                <button class="nav-link common_btn active" id="v-stripe-payment-tab" data-bs-toggle="pill" data-bs-target="#v-stripe-payment" type="button" role="tab" aria-controls="v-stripe-payment" aria-selected="true">{{__('Stripe')}}</button>
-                                @endif
-
-                                @if ($paypal->status == 1)
-                                <button class="nav-link common_btn" id="v-paypal-payment-tab" data-bs-toggle="pill" data-bs-target="#v-paypal-payment" type="button" role="tab" aria-controls="v-paypal-payment" aria-selected="false">{{__('Paypal')}}</button>
-                                @endif
-
-                                @if ($razorpay->status == 1)
-                                <button class="nav-link common_btn" id="v-razorpay-payment-tab" data-bs-toggle="pill" data-bs-target="#v-razorpay-payment" type="button" role="tab" aria-controls="v-razorpay-payment" aria-selected="false">{{__('Razorpay')}}</button>
-                                @endif
-
-                                @if ($flutterwave->status == 1)
-                                    <button class="nav-link common_btn" id="v-flutterwave-payment-tab" data-bs-toggle="pill" data-bs-target="#v-flutterwave-payment" type="button" role="tab" aria-controls="v-flutterwave-payment" aria-selected="false">{{__('Flutterwave')}}</button>
-                                @endif
-
-                                @if ($paystack->mollie_status == 1)
-                                <button class="nav-link common_btn" id="v-mollie-payment-tab" data-bs-toggle="pill" data-bs-target="#v-mollie-payment" type="button" role="tab" aria-controls="v-mollie-payment" aria-selected="false">{{__('Mollie')}}</button>
-                                @endif
-
-                                @if ($paystack->paystack_status == 1)
-                                <button class="nav-link common_btn" id="v-paystack-payment-tab" data-bs-toggle="pill" data-bs-target="#v-paystack-payment" type="button" role="tab" aria-controls="v-paystack-payment" aria-selected="false">{{__('Paystack')}}</button>
-                                @endif
-
-                                @if ($instamojoPayment->status == 1)
-                                    <button class="nav-link common_btn" id="v-instamojo-payment-tab" data-bs-toggle="pill" data-bs-target="#v-instamojo-payment" type="button" role="tab" aria-controls="v-instamojo-payment" aria-selected="false">{{__('Instamojo')}}</button>
-                                @endif
 
                                 @if ($bankPayment->status == 1)
                                 <button class="nav-link common_btn" id="v-bank-payment-tab" data-bs-toggle="pill" data-bs-target="#v-bank-payment" type="button" role="tab" aria-controls="v-bank-payment" aria-selected="false">{{__('Bank')}}</button>
@@ -128,89 +101,6 @@
                     </div>
                     <div class="col-xl-6 col-lg-6">
                         <div class="tab-content" id="v-pills-tabContent">
-                            @if ($stripe->status == 1)
-                            <div class="tab-pane fade show active" id="v-stripe-payment" role="tabpanel" aria-labelledby="v-stripe-payment-tab">
-                                <div class="row">
-                                    <div class="col-xl-12 m-auto">
-                                        <div class="wsus__payment_area">
-                                            <form role="form" action="{{ route('user.checkout.pay-with-stripe') }}" method="POST" class="require-validation"
-                                                    data-cc-on-file="false"
-                                                    data-stripe-publishable-key="{{ $stripe->stripe_key }}"
-                                                    id="payment-form">
-                                                    @csrf
-                                             <div class="row">
-                                                 <div class="col-12">
-                                                     <input class="input" name="name" type="text" placeholder="{{__('Name')}}">
-                                                 </div>
-                                                 <div class="col-12">
-                                                     <input class="input card-number" name="card_number" type="text" placeholder="{{__('Card Number')}}">
-                                                 </div>
-                                                 <div class="col-4">
-                                                     <input class="input card-expiry-month" name="month" type="text" placeholder="{{__('Month')}}">
-                                                 </div>
-                                                 <div class="col-4">
-                                                     <input class="input card-expiry-year" name="year" type="text" placeholder="{{__('Year')}}">
-                                                 </div>
-
-                                                 <div class="col-4 ms-auto">
-                                                     <input class="input card-cvc" name="cvc" type="text" placeholder="{{__('CVC')}}">
-                                                 </div>
-                                             </div>
-
-                                             <button type="submit" class="common_btn">{{__('Payment')}}</button>
-                                         </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class='form-row row mt-4'>
-                                    <div class='col-md-12 error d-none form-group '>
-                                        <div class='alert-danger alert '>{{__('Please provide your valid card information')}}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-                            <div class="tab-pane fade" id="v-paypal-payment" role="tabpanel" aria-labelledby="v-paypal-payment-tab">
-                                <a href="{{ route('user.checkout.pay-with-paypal') }}" type="submit" class="common_btn mt-4">{{__('Pay with paypal')}}</a>
-                            </div>
-
-                            <div class="tab-pane fade" id="v-razorpay-payment" role="tabpanel" aria-labelledby="v-razorpay-payment-tab">
-                                <form action="{{ route('user.checkout.pay-with-razorpay') }}" method="POST" >
-                                    @csrf
-                                    @php
-                                        $payable_amount = $total_price * $razorpay->currency_rate;
-                                        $payable_amount = round($payable_amount, 2);
-                                    @endphp
-                                    <script src="https://checkout.razorpay.com/v1/checkout.js"
-                                            data-key="{{ $razorpay->key }}"
-                                            data-currency="{{ $razorpay->currency_code }}"
-                                            data-amount= "{{ $payable_amount * 100 }}"
-                                            data-buttontext="{{__('Pay')}} {{ $payable_amount }} {{ $razorpay->currency_code }}"
-                                            data-name="{{ $razorpay->name }}"
-                                            data-description="{{ $razorpay->description }}"
-                                            data-image="{{ asset($razorpay->image) }}"
-                                            data-prefill.name=""
-                                            data-prefill.email=""
-                                            data-theme.color="{{ $razorpay->color }}">
-                                    </script>
-                                </form>
-
-                            </div>
-
-                            <div class="tab-pane fade" id="v-flutterwave-payment" role="tabpanel" aria-labelledby="v-flutterwave-payment-tab">
-                                <button type="button" onclick="makePayment()" class="common_btn mt-4">{{__('Payment with Flutterwave')}}</button>
-                            </div>
-
-                            <div class="tab-pane fade" id="v-mollie-payment" role="tabpanel" aria-labelledby="v-mollie-payment-tab">
-                                <a href="{{ route('user.checkout.pay-with-mollie') }}" class="common_btn mt-4">{{__('Payment with Mollie')}}</a>
-                            </div>
-
-                            <div class="tab-pane fade" id="v-paystack-payment" role="tabpanel" aria-labelledby="v-paystack-payment-tab">
-                                <button onclick="payWithPaystack()" type="button" class="common_btn mt-4">{{__('Payment with Paystack')}}</button>
-                            </div>
-
-                            <div class="tab-pane fade" id="v-instamojo-payment" role="tabpanel" aria-labelledby="v-instamojo-payment-tab">
-                                <a href="{{ route('user.checkout.pay-with-instamojo') }}" class="common_btn mt-4">{{__('Payment with Instamojo')}}</a>
-                            </div>
 
                             <div class="tab-pane fade" id="v-bank-payment" role="tabpanel" aria-labelledby="v-bank-payment-tab">
 

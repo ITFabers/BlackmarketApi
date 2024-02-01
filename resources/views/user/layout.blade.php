@@ -43,7 +43,6 @@
         var capmaign_time = 0;
         var filter_max_val = 1000;
         var currency_icon = $;
-        var themeColor = "{{ $setting->theme_one }}";
     </script>
 
     <script>
@@ -109,18 +108,7 @@
           <li><a class="{{ Route::is('user.wishlist') ? 'active' : '' }}" href="{{ route('user.wishlist') }}"><i class="far fa-heart"></i> {{__('Wishlist')}}</a></li>
           <li><a class="{{ Route::is('user.my-profile') ? 'active' : '' }}" href="{{ route('user.my-profile') }}"><i class="far fa-user"></i> {{__('My Profile')}}</a></li>
           <li><a class="{{ Route::is('user.address') ? 'active' : '' }}" href="{{ route('user.address') }}"><i class="fal fa-gift-card"></i> {{__('Address')}}</a></li>
-        @if ($setting->enable_multivendor == 1)
-            @php
-                $authUser = Auth::guard('web')->user();
-                $isSeller = App\Models\Vendor::where('user_id', $authUser->id)->first();
-            @endphp
-            @if ($isSeller)
-                <li><a class="" href="{{ route('seller.dashboard') }}"><i class="fal fa-gift-card"></i> {{__('Visit Seller Dashboard')}}</a></li>
-            @else
-                <li><a class="{{ Route::is('user.seller-registration') ? 'active' : '' }}" href="{{ route('user.seller-registration') }}"><i class="fal fa-gift-card"></i> {{__('Become a Seller')}}</a></li>
-            @endif
 
-        @endif
 
 
           <li><a class="{{ Route::is('user.change-password') ? 'active' : '' }}" href="{{ route('user.change-password') }}"><i class="fal fa-gift-card"></i> {{__('Change Password')}}</a></li>
@@ -245,57 +233,12 @@
 <script src="{{ asset('js/app.js') }}"></script>
 
 <script>
-    let activeSellerId= '';
-    let myId = {{ Auth::guard('web')->user()->id; }};
-    function loadChatBox(id){
-        $(".seller").removeClass('active');
-        $("#seller-list-"+id).addClass('active')
-        $("#pending-"+ id).addClass('d-none')
-        $("#pending-"+ id).html(0)
-        activeSellerId = id
-        $.ajax({
-            type:"get",
-            url: "{{ url('user/load-chat-box/') }}" + "/" + id,
-            success:function(response){
-                $("#chat_box").html(response)
-                scrollToBottomFunc()
-            },
-            error:function(err){
-            }
-        })
-    }
 
 
   (function($) {
       "use strict";
       $(document).ready(function () {
             $('.clockpicker').clockpicker();
-
-            Echo.private("App.Models.User.{{$user->id}}")
-            .listen('SellerToUser', (e) => {
-                if(e.seller_id == activeSellerId){
-                    $.ajax({
-                        type:"get",
-                        url: "{{ url('user/load-new-message/') }}" + "/" + e.seller_id,
-                        success:function(response){
-                            $(".wsus__chat_area_body").html(response)
-                            scrollToBottomFunc()
-                        },
-                        error:function(err){
-                        }
-                    })
-                }else{
-                    var pending = parseInt($("#pending-"+ e.seller_id).html());
-                    if (pending) {
-                        $("#pending-"+ e.seller_id).html(pending + 1)
-                        $("#pending-"+ e.seller_id).removeClass('d-none')
-                    } else {
-                        $("#pending-"+ e.seller_id).html(pending + 1)
-                        $("#pending-"+ e.seller_id).removeClass('d-none')
-                    }
-                }
-
-            });
       });
   })(jQuery);
 

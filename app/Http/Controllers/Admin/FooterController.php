@@ -3,24 +3,26 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Footer;
-use Image;
 use File;
+use Illuminate\Http\Request;
+use Image;
+
 class FooterController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index(){
         $footer = Footer::first();
-        return response()->json(['footer' => $footer], 200);
+        return view('admin.website_footer', compact('footer'));
     }
 
     public function update(Request $request, $id){
         $rules = [
+            'about_us' =>'required',
             'email' =>'required',
             'phone' =>'required',
             'address' =>'required',
@@ -30,17 +32,19 @@ class FooterController extends Controller
             'third_column' =>'required',
         ];
         $customMessages = [
-            'email.required' => trans('Email is required'),
-            'phone.required' => trans('Phone is required'),
-            'address.required' => trans('Address is required'),
-            'copyright.required' => trans('Copyright is required'),
-            'first_column.required' => trans('First column title is required'),
-            'second_column.required' => trans('Second column title is required'),
-            'third_column.required' => trans('Third column title is required'),
+            'about_us.required' => trans('admin_validation.About us is required'),
+            'email.required' => trans('admin_validation.Email is required'),
+            'phone.required' => trans('admin_validation.Phone is required'),
+            'address.required' => trans('admin_validation.Address is required'),
+            'copyright.required' => trans('admin_validation.Copyright is required'),
+            'first_column.required' => trans('admin_validation.First column title is required'),
+            'second_column.required' => trans('admin_validation.Second column title is required'),
+            'third_column.required' => trans('admin_validation.Third column title is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
         $footer = Footer::first();
+        $footer->about_us = $request->about_us;
         $footer->email = $request->email;
         $footer->phone = $request->phone;
         $footer->address = $request->address;
@@ -65,8 +69,9 @@ class FooterController extends Controller
         }
 
 
-        $notification = trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification = trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
 
     }
 }

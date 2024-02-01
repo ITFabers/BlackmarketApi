@@ -36,30 +36,51 @@
                                     <input type="file" name="slider_image" class="form-control-file">
                                 </div>
 
-                                <div class="form-group col-12">
+                                <!-- <div class="form-group col-12">
                                     <label>{{__('admin.Badge')}} <span class="text-danger">*</span></label>
                                     <input type="text" name="badge" class="form-control" value="{{ $slider->badge }}">
-                                </div>
+                                </div> -->
 
                                 <div class="form-group col-12">
-                                    <label>{{__('admin.Title One')}} <span class="text-danger">*</span></label>
+                                    <label>{{__('admin.Sub Title')}} <span class="text-danger">*</span></label>
                                     <input type="text" name="title_one" class="form-control" value="{{ $slider->title_one }}">
                                 </div>
 
                                 <div class="form-group col-12">
-                                    <label>{{__('admin.Title Two')}} <span class="text-danger">*</span></label>
+                                    <label>{{__('admin.Title')}} <span class="text-danger">*</span></label>
                                     <input type="text" name="title_two" class="form-control" value="{{ $slider->title_two }}">
                                 </div>
 
                                 <div class="form-group col-12">
-                                    <label>{{__('admin.Product Link')}} <span class="text-danger">*</span></label>
+                                    <label>{{__('admin.Description')}}</label>
+                                    <input type="text" name="description" class="form-control" value="{{ $slider->description }}">
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Button Text(left)')}}</label>
+                                    <input type="text" name="btn_text1" class="form-control" value="{{ $slider->btn_text1 }}">
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Button Text(right)')}}</label>
+                                    <input type="text" name="btn_text2" class="form-control" value="{{ $slider->btn_text2 }}">
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Button Url(left)')}}</label>
+                                    <input type="text" name="btn_url1" class="form-control" value="{{ $slider->btn_url1 }}">
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Button Url(right)')}}</label>
+                                    <input type="text" name="btn_url2" class="form-control" value="{{ $slider->btn_url2 }}">
+                                </div>
+
+                                <!-- <div class="form-group col-12">
+                                    <label>{{__('admin.Product Link')}}</label>
                                     <select name="product_slug" id="" class="form-control select2">
                                         <option value="">{{__('admin.Select Product')}}</option>
                                         @foreach ($products as $product)
                                             <option {{ $slider->product_slug == $product->slug ? 'selected' : '' }} value="{{ $product->slug }}">{{ $product->name }}</option>
                                         @endforeach
                                     </select>
-                                </div>
+                                </div> -->
 
                                 <div class="form-group col-12">
                                     <label>{{__('admin.Serial')}} <span class="text-danger">*</span></label>

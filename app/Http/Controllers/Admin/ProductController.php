@@ -1,40 +1,38 @@
 <?php
 
-namespace App\Http\Controllers\WEB\Admin;
+namespace App\Http\Controllers\Admin;
+use App\Events\NewProductCreated;
+use App\Exports\ProductExport;
 use App\Http\Controllers\Controller;
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Models\Category;
-use App\Models\ProductGallery;
+use App\Imports\ProductImport;
+use App\Models\Admin;
 use App\Models\Brand;
-use App\Models\ProductSpecificationKey;
-use App\Models\ProductSpecification;
+use App\Models\Category;
+use App\Models\CompareProduct;
+use App\Models\FlashSaleProduct;
+use App\Models\Notification;
 use App\Models\OrderProduct;
-use App\Models\ProductVariant;
-use App\Models\ProductVariantItem;
-use App\Models\OrderProductVariant;
+use App\Models\Product;
+use App\Models\ProductAttribute;
+use App\Models\ProductGallery;
 use App\Models\ProductReport;
 use App\Models\ProductReview;
-use App\Models\Wishlist;
+use App\Models\ProductSpecification;
+use App\Models\ProductSpecificationKey;
+use App\Models\ProductSubcategory;
+use App\Models\ProductVariant;
+use App\Models\ProductVariantItem;
 use App\Models\Setting;
-use App\Models\FlashSaleProduct;
 use App\Models\ShoppingCart;
 use App\Models\ShoppingCartVariant;
-use App\Models\CompareProduct;
-use App\Models\ProductSubcategory;
-use App\Models\ProductAttribute;
-use App\Events\NewProductCreated;
-use App\Models\Admin;
-use App\Models\Notification;
-
-use Image;
+use App\Models\Wishlist;
+use Exception;
 use File;
+use Illuminate\Http\Request;
+use Image;
+use Maatwebsite\Excel\Facades\Excel;
 use Str;
 
-use App\Exports\ProductExport;
-use App\Imports\ProductImport;
-use Maatwebsite\Excel\Facades\Excel;
-use Exception;
 class ProductController extends Controller
 {
     public function __construct()
@@ -44,7 +42,7 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = Product::with('seller','brand')->where(['vendor_id' => 0])->orderBy('id','desc')->get();
+        $products = Product::orderBy('id','desc')->get();
         $orderProducts = OrderProduct::all();
         $setting = Setting::first();
         $frontend_url = $setting->frontend_url;
@@ -52,29 +50,10 @@ class ProductController extends Controller
         return view('admin.product',compact('products','orderProducts','setting','frontend_url'));
     }
 
-    public function sellerProduct(){
 
-        $products = Product::with('seller','brand')->where('vendor_id','!=',0)->where('approve_by_admin',1)->orderBy('id','desc')->get();
-        $orderProducts = OrderProduct::all();
-        $setting = Setting::first();
-        $frontend_url = $setting->frontend_url;
-        $frontend_url = $frontend_url.'/single-product?slug=';
-        return view('admin.product',compact('products','orderProducts','setting','frontend_url'));
-    }
-
-    public function sellerPendingProduct(){
-        $products = Product::with('seller','brand')->where('vendor_id','!=',0)->where('approve_by_admin',0)->orderBy('id','desc')->get();
-        $orderProducts = OrderProduct::all();
-        $setting = Setting::first();
-        $frontend_url = $setting->frontend_url;
-        $frontend_url = $frontend_url.'/single-product?slug=';
-
-        return view('admin.pending_product',compact('products','orderProducts','setting','frontend_url'));
-
-    }
 
     public function stockoutProduct(){
-        $products = Product::with('seller','brand')->where('vendor_id',0)->get();
+        $products = Product::with('brand')->get();
         $orderProducts = OrderProduct::all();
         $setting = Setting::first();
         $frontend_url = $setting->frontend_url;
@@ -102,7 +81,6 @@ class ProductController extends Controller
             'short_name' => 'required',
             'name' => 'required',
             'slug' => 'required|unique:products',
-            'thumb_image' => 'required',
             'subcategories' => 'required',
             'short_description' => 'required',
             'long_description' => 'required',
@@ -116,7 +94,6 @@ class ProductController extends Controller
             'slug.required' => trans('admin_validation.Slug is required'),
             'slug.unique' => trans('admin_validation.Slug already exist'),
             'category.required' => trans('admin_validation.Category is required'),
-            'thumb_image.required' => trans('admin_validation.thumbnail is required'),
             'short_description.required' => trans('admin_validation.Short description is required'),
             'long_description.required' => trans('admin_validation.Long description is required'),
             'price.required' => trans('admin_validation.Price is required'),
@@ -152,6 +129,7 @@ class ProductController extends Controller
         $product->is_best = $request->best_product ? 1 : 0;
         $product->is_featured = $request->is_featured ? 1 : 0;
         $product->approve_by_admin = 1;
+        $product->show_homepage = $request->show_homepage;
         $product->save();
         if($request->gallery){
           foreach ($request->gallery as $key => $gallery) {
@@ -209,18 +187,24 @@ class ProductController extends Controller
                 }
             }
         }
+
+
         $variants = $request->input('variant');
         $variantItems = $request->input('variant_item');
+        $variantTexts = $request->input('text');
 
         foreach ($variants as $index => $variantId) {
             $variantItem = $variantItems[$index];
-            if ($variantId!=0) {
+            $variantText = $variantTexts[$index];
+            if (!empty($variantId)) {
+
+            // Save the updated product attribute in the product_attributes table
               $product->attributes()->create([
                   'variant_id' => $variantId,
                   'variant_item_id' => $variantItem,
+                  'text' => $variantText
               ]);
             }
-
         }
         $productSubcategory = new ProductSubcategory();
         $productSubcategory->product_id = $product->id;
@@ -245,12 +229,9 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::with('brand','gallery','specifications','reviews','attributes')->find($id);
+        $product = Product::with('brand','gallery','specifications','attributes')->find($id);
 
-        // if($product->vendor_id == 0){
-        //     $notification = 'Something went wrong';
-        //     return response()->json(['error'=>$notification],403);
-        // }
+
         return view('admin.view_product',compact('product'));
     }
     public function getVariantItems(Request $request)
@@ -307,8 +288,7 @@ class ProductController extends Controller
             'name.unique' => trans('admin_validation.Name is required'),
             'slug.required' => trans('admin_validation.Slug is required'),
             'slug.unique' => trans('admin_validation.Slug already exist'),
-            'category.required' => trans('admin_validation.Category is required'),
-            'thumb_image.required' => trans('admin_validation.thumbnail is required'),
+            'subcategories.required' => trans('admin_validation.Category is required'),
             'banner_image.required' => trans('admin_validation.Banner is required'),
             'short_description.required' => trans('admin_validation.Short description is required'),
             'long_description.required' => trans('admin_validation.Long description is required'),
@@ -350,25 +330,34 @@ class ProductController extends Controller
         $product->new_product = $request->new_arrival ? 1 : 0;
         $product->is_best = $request->best_product ? 1 : 0;
         $product->is_featured = $request->is_featured ? 1 : 0;
-        if($product->vendor_id != 0){
-            $product->approve_by_admin = $request->approve_by_admin;
-        }
+        $product->show_homepage = $request->show_homepage;
+
+        $product->approve_by_admin = $request->approve_by_admin;
         $product->save();
         $productSubcategory = ProductSubcategory::where('product_id',$product->id)->first();
-        $productSubcategory->categories_ids = implode(',', $request->input('subcategories'));
-        $productSubcategory->save();
+        if (!empty($productSubcategory)) {
+          $productSubcategory->categories_ids = $request->input('subcategories')?implode(',', $request->input('subcategories')):'';
+          $productSubcategory->save();
+
+        }
 
         $product->attributes()->delete();
         $variants = $request->input('variant');
         $variantItems = $request->input('variant_item');
-        
+        $variantTexts = $request->input('text');
+
         foreach ($variants as $index => $variantId) {
             $variantItem = $variantItems[$index];
+            $variantText = $variantTexts[$index];
+            if (!empty($variantId)) {
+
             // Save the updated product attribute in the product_attributes table
             $product->attributes()->create([
                 'variant_id' => $variantId,
                 'variant_item_id' => $variantItem,
+                'text' => $variantText
             ]);
+          }
         }
         $notification = trans('admin_validation.Update Successfully');
         $notification=array('messege'=>$notification,'alert-type'=>'success');
@@ -391,8 +380,7 @@ class ProductController extends Controller
                 if(File::exists(public_path().'/'.$old_image))unlink(public_path().'/'.$old_image);
             }
         }
-        ProductVariant::where('product_id',$id)->delete();
-        ProductVariantItem::where('product_id',$id)->delete();
+        ProductAttribute::where('product_id',$id)->delete();
         FlashSaleProduct::where('product_id',$id)->delete();
         ProductReport::where('product_id',$id)->delete();
         ProductReview::where('product_id',$id)->delete();

@@ -19,15 +19,15 @@ class AddressCotroller extends Controller
 
     public function index(){
         $user = Auth::guard('api')->user();
-        $addresses = Address::with('country','countryState','city')->where(['user_id' => $user->id])->get();
-
-        return response()->json(['addresses' => $addresses]);
+        $addresses = Address::with('city')->where(['user_id' => $user->id])->get();
+        $city = City::orderBy('name','asc')->where('status',1)->select('id','name')->get();
+        return response()->json(['addresses' => $addresses, 'city' => $city]);
     }
 
     public function create(){
-        $countries = Country::orderBy('name','asc')->where('status',1)->select('id','name')->get();
+        $city = City::orderBy('name','asc')->where('status',1)->select('id','name')->get();
 
-        return response()->json(['countries' => $countries]);
+        return response()->json(['city' => $city]);
     }
 
     public function store(Request $request){
@@ -35,8 +35,6 @@ class AddressCotroller extends Controller
             'name'=>'required',
             'email'=>'required',
             'phone'=>'required',
-            'country'=>'required',
-            'state'=>'required',
             'city'=>'required',
             'address'=>'required',
             'type'=>'required',
@@ -45,8 +43,6 @@ class AddressCotroller extends Controller
             'name.required' => trans('user_validation.Name is required'),
             'email.required' => trans('user_validation.Email is required'),
             'phone.required' => trans('user_validation.Phone is required'),
-            'country.required' => trans('user_validation.Country is required'),
-            'state.required' => trans('user_validation.State is required'),
             'city.required' => trans('user_validation.City is required'),
             'address.required' => trans('user_validation.Address is required'),
             'type.required' => trans('user_validation.Address type is required'),
@@ -61,9 +57,6 @@ class AddressCotroller extends Controller
         $address->email = $request->email;
         $address->phone = $request->phone;
         $address->address = $request->address;
-        $address->country_id = $request->country;
-        $address->state_id = $request->state;
-        $address->city_id = $request->city;
         $address->city_id = $request->city;
         $address->type = $request->type;
         if($isExist == 0){
@@ -80,7 +73,7 @@ class AddressCotroller extends Controller
 
     public function show($id){
         $user = Auth::guard('api')->user();
-        $address = Address::with('country','countryState','city')->where(['user_id' => $user->id, 'id' => $id])->first();
+        $address = Address::with('city')->where(['user_id' => $user->id, 'id' => $id])->first();
         if(!$address){
             $notification = trans('user_validation.Something went wrong');
             return response()->json(['notification' => $notification],403);
@@ -98,14 +91,10 @@ class AddressCotroller extends Controller
             $notification = trans('user_validation.Something went wrong');
             return response()->json(['notification' => $notification],403);
         }
-        $countries = Country::orderBy('name','asc')->where('status',1)->select('id','name')->get();
-        $states = CountryState::orderBy('name','asc')->where(['status' => 1, 'country_id' => $address->country_id])->get();
-        $cities = City::orderBy('name','asc')->where(['status' => 1, 'country_state_id' => $address->state_id])->get();
+        $cities = City::orderBy('name','asc')->where(['status' => 1])->get();
 
         return response()->json([
             'address' => $address,
-            'countries' => $countries,
-            'states' => $states,
             'cities' => $cities
         ]);
     }
@@ -123,8 +112,6 @@ class AddressCotroller extends Controller
             'name'=>'required',
             'email'=>'required',
             'phone'=>'required',
-            'country'=>'required',
-            'state'=>'required',
             'city'=>'required',
             'address'=>'required',
             'type'=>'required',
@@ -133,8 +120,6 @@ class AddressCotroller extends Controller
             'name.required' => trans('user_validation.Name is required'),
             'email.required' => trans('user_validation.Email is required'),
             'phone.required' => trans('user_validation.Phone is required'),
-            'country.required' => trans('user_validation.Country is required'),
-            'state.required' => trans('user_validation.State is required'),
             'city.required' => trans('user_validation.City is required'),
             'address.required' => trans('user_validation.Address is required'),
             'type.required' => trans('user_validation.Address type is required'),
@@ -146,9 +131,6 @@ class AddressCotroller extends Controller
         $address->email = $request->email;
         $address->phone = $request->phone;
         $address->address = $request->address;
-        $address->country_id = $request->country;
-        $address->state_id = $request->state;
-        $address->city_id = $request->city;
         $address->city_id = $request->city;
         $address->type = $request->type;
         $address->save();

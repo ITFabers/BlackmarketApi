@@ -31,17 +31,7 @@ return [
     ],
 
 
-    'google' => [
-        'client_id' => '',
-        'client_secret' => '',
-        'redirect' => '',
-    ],
 
-    'facebook' => [
-        'client_id' => '',
-        'client_secret' => '',
-        'redirect' => '',
-    ],
 
 
 

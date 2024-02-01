@@ -31,13 +31,6 @@ function getRegexBetween($content) {
 
 function generateLang($path = ''){
 
-    // user panel
-    // $paths = getAllResourceFiles(resource_path('views/user'));
-    // $paths = array_merge($paths, getAllResourceFiles(resource_path('views/seller')));
-    // $paths = array_merge($paths, getAllResourceFiles(resource_path('views/errors')));
-    // $paths = array_merge($paths, getAllResourceFiles(resource_path('views/test')));
-    // end user panel
-
     // user validation
     $paths = getAllResourceFiles(app_path('Http/Controllers/User'));
     $paths = array_merge($paths, getAllResourceFiles(app_path('Http/Controllers/test')));
@@ -46,12 +39,10 @@ function generateLang($path = ''){
 
     // admin panel
     // $paths = getAllResourceFiles(resource_path('views/admin'));
-    // $paths = array_merge($paths, getAllResourceFiles(resource_path('views/seller')));
     // end admin panel
 
     // admin validation
     // $paths = getAllResourceFiles(app_path('Http/Controllers/WEB/Admin'));
-    // $paths = array_merge($paths, getAllResourceFiles(app_path('Http/Controllers/WEB/Seller')));
     // end validation
     $AllData= [];
     foreach ($paths as $key => $path) {

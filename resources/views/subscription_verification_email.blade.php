@@ -7,7 +7,7 @@
 </head>
 <body>
     {!! clean($template) !!}
-    <a href="{{ route('subscriber-verification', $subscriber->verified_token) }}">{{ route('subscriber-verification', $subscriber->verified_token) }}</a>
+    <a href="{{ route('subscriber-verification',['email'=>$subscriber->email,'token'=>$subscriber->verified_token]) }}">{{ route('subscriber-verification',['email'=>$subscriber->email,'token'=>$subscriber->verified_token]) }}</a>
 
 
 

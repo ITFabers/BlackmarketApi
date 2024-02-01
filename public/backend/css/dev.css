@@ -67,10 +67,6 @@ img.admin-banner-img {
     min-height: 120px !important;
 }
 
-.card-body.seller_chat_list {
-    height: 650px !important;
-}
-
 .chat-box .chat-content .chat-item.chat-right img {
     object-fit: cover;
     width: 60px !important;

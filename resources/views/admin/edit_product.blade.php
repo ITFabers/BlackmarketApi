@@ -138,15 +138,13 @@
                                     </div>
                                 </div>
 
-                                @if ($product->vendor_id != 0)
-                                    <div class="form-group col-12">
-                                        <label>{{__('admin.Administrator Status')}} <span data-toggle="tooltip" data-placement="top" class="fa fa-info-circle text--primary" title="Only for seller product"></span> <span class="text-danger">*</span></label>
-                                        <select name="approve_by_admin" class="form-control">
-                                            <option {{ $product->approve_by_admin == 1 ? 'selected' : '' }} value="1">{{__('admin.Approved')}}</option>
-                                            <option {{ $product->approve_by_admin == 0 ? 'selected' : '' }} value="0">{{__('admin.Pending')}}</option>
-                                        </select>
-                                    </div>
-                                @endif
+                                <div class="form-group col-12">
+                                    <label>{{__('admin.Administrator Status')}} <span data-toggle="tooltip" data-placement="top" class="fa fa-info-circle text--primary" title="Only for seller product"></span> <span class="text-danger">*</span></label>
+                                    <select name="approve_by_admin" class="form-control">
+                                        <option {{ $product->approve_by_admin == 1 ? 'selected' : '' }} value="1">{{__('admin.Approved')}}</option>
+                                        <option {{ $product->approve_by_admin == 0 ? 'selected' : '' }} value="0">{{__('admin.Pending')}}</option>
+                                    </select>
+                                </div>
                                 @if(Auth::user()->admin_type==1)
 
                                 <div class="form-group col-12">

@@ -7,21 +7,27 @@ use App\Models\Blog;
 use App\Models\BlogCategory;
 use App\Models\BlogComment;
 use App\Models\PopularPost;
-use Illuminate\Http\Request;
-use  Image;
-use File;
+use App\Models\Setting;
 use Auth;
+use File;
+use Illuminate\Http\Request;
+use Image;
+
 class BlogController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index()
     {
         $blogs = Blog::with('category','comments')->get();
-        return response()->json(['blogs' => $blogs]);
+        $setting = Setting::first();
+        $frontend_url = $setting->frontend_url;
+        $frontend_url = $frontend_url.'/blogs/blog?slug=';
+
+        return view('admin.blog',compact('blogs','frontend_url'));
     }
 
 
@@ -44,18 +50,18 @@ class BlogController extends Controller
             'show_homepage'=>'required',
         ];
         $customMessages = [
-            'title.required' => trans('Title is required'),
-            'title.unique' => trans('Title already exist'),
-            'slug.required' => trans('Slug is required'),
-            'slug.unique' => trans('Slug already exist'),
-            'image.required' => trans('Image is required'),
-            'description.required' => trans('Description is required'),
-            'category.required' => trans('Category is required'),
-            'show_homepage.required' => trans('Show homepage is required'),
+            'title.required' => trans('admin_validation.Title is required'),
+            'title.unique' => trans('admin_validation.Title already exist'),
+            'slug.required' => trans('admin_validation.Slug is required'),
+            'slug.unique' => trans('admin_validation.Slug already exist'),
+            'image.required' => trans('admin_validation.Image is required'),
+            'description.required' => trans('admin_validation.Description is required'),
+            'category.required' => trans('admin_validation.Category is required'),
+            'show_homepage.required' => trans('admin_validation.Show homepage is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
-        $admin = Auth::guard('admin-api')->user();
+        $admin = Auth::guard('admin')->user();
         $blog = new Blog();
         if($request->image){
             $extention=$request->image->getClientOriginalExtension();
@@ -77,8 +83,9 @@ class BlogController extends Controller
         $blog->seo_description = $request->seo_description ? $request->seo_description : $request->title;
         $blog->save();
 
-        $notification= trans('Created Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification= trans('admin_validation.Created Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function edit($id)
@@ -108,13 +115,13 @@ class BlogController extends Controller
             'show_homepage'=>'required',
         ];
         $customMessages = [
-            'title.required' => trans('Title is required'),
-            'title.unique' => trans('Title already exist'),
-            'slug.required' => trans('Slug is required'),
-            'slug.unique' => trans('Slug already exist'),
-            'description.required' => trans('Description is required'),
-            'category.required' => trans('Category is required'),
-            'show_homepage.required' => trans('Show homepage is required'),
+            'title.required' => trans('admin_validation.Title is required'),
+            'title.unique' => trans('admin_validation.Title already exist'),
+            'slug.required' => trans('admin_validation.Slug is required'),
+            'slug.unique' => trans('admin_validation.Slug already exist'),
+            'description.required' => trans('admin_validation.Description is required'),
+            'category.required' => trans('admin_validation.Category is required'),
+            'show_homepage.required' => trans('admin_validation.Show homepage is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -142,8 +149,9 @@ class BlogController extends Controller
         $blog->seo_description = $request->seo_description ? $request->seo_description : $request->title;
         $blog->save();
 
-        $notification= trans('Updated Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification= trans('admin_validation.Updated Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.blog.index')->with($notification);
     }
 
     public function destroy($id)
@@ -158,8 +166,9 @@ class BlogController extends Controller
         BlogComment::where('blog_id',$id)->delete();
         PopularPost::where('blog_id',$id)->delete();
 
-        $notification=  trans('Delete Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification=  trans('admin_validation.Delete Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function changeStatus($id){
@@ -167,11 +176,11 @@ class BlogController extends Controller
         if($blog->status==1){
             $blog->status=0;
             $blog->save();
-            $message= trans('Inactive Successfully');
+            $message= trans('admin_validation.Inactive Successfully');
         }else{
             $blog->status=1;
             $blog->save();
-            $message= trans('Active Successfully');
+            $message= trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }

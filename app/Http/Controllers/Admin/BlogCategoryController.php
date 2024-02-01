@@ -10,13 +10,13 @@ class BlogCategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index()
     {
         $categories=BlogCategory::with('blogs')->get();
-        return response()->json(['categories' => $categories]);
+        return view('admin.blog_category',compact('categories'));
 
     }
 
@@ -35,10 +35,10 @@ class BlogCategoryController extends Controller
             'status'=>'required',
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'name.unique' => trans('Name already exist'),
-            'slug.required' => trans('Slug is required'),
-            'slug.unique' => trans('Slug already exist'),
+            'name.required' => trans('admin_validation.Name is required'),
+            'name.unique' => trans('admin_validation.Name already exist'),
+            'slug.required' => trans('admin_validation.Slug is required'),
+            'slug.unique' => trans('admin_validation.Slug already exist'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -48,14 +48,9 @@ class BlogCategoryController extends Controller
         $category->status = $request->status;
         $category->save();
 
-        $notification= trans('Created Successfully');
-        return response()->json(['message' => $notification], 200);
-    }
-
-    public function show($id)
-    {
-        $category = BlogCategory::find($id);
-        return response()->json(['category' => $category], 200);
+        $notification= trans('admin_validation.Created Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 
@@ -74,10 +69,10 @@ class BlogCategoryController extends Controller
             'status'=>'required',
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'name.unique' => trans('Name already exist'),
-            'slug.required' => trans('Slug is required'),
-            'slug.unique' => trans('Slug already exist'),
+            'name.required' => trans('admin_validation.Name is required'),
+            'name.unique' => trans('admin_validation.Name already exist'),
+            'slug.required' => trans('admin_validation.Slug is required'),
+            'slug.unique' => trans('admin_validation.Slug already exist'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -87,8 +82,9 @@ class BlogCategoryController extends Controller
         $category->status = $request->status;
         $category->save();
 
-        $notification= trans('Update Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification= trans('admin_validation.Update Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.blog-category.index')->with($notification);
     }
 
     public function destroy($id)
@@ -96,8 +92,9 @@ class BlogCategoryController extends Controller
         $category = BlogCategory::find($id);
         $category->delete();
 
-        $notification= trans('Delete Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification= trans('admin_validation.Delete Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function changeStatus($id){
@@ -105,11 +102,11 @@ class BlogCategoryController extends Controller
         if($category->status==1){
             $category->status=0;
             $category->save();
-            $message= trans('Inactive Successfully');
+            $message= trans('admin_validation.Inactive Successfully');
         }else{
             $category->status=1;
             $category->save();
-            $message= trans('Active Successfully');
+            $message= trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }

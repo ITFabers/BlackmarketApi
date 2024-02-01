@@ -3,41 +3,45 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Product;
 use App\Models\Slider;
-use Image;
 use File;
+use Illuminate\Http\Request;
+use Image;
+
 class SliderController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index(){
         $sliders = Slider::all();
-        return response()->json(['sliders' => $sliders], 200);
+        return view('admin.slider', compact('sliders'));
+    }
+
+    public function create(){
+        $products = Product::where(['status' => 1])->select('id','name','slug')->get();
+        return view('admin.create_slider', compact('products'));
     }
 
     public function store(Request $request){
         $rules = [
             'slider_image' => 'required',
-            'title' => 'required',
-            'description' => 'required',
-            'button_link' => 'required',
             'status' => 'required',
             'serial' => 'required',
-            'label' => 'required',
-
+            'title_one' => 'required',
+            'title_two' => 'required',
         ];
         $customMessages = [
-            'slider_image.required' => trans('Slider image is required'),
-            'title.required' => trans('Title is required'),
-            'description.required' => trans('Description is required'),
-            'button_link.required' => trans('Button link is required'),
-            'status.required' => trans('Status is required'),
-            'serial.required' => trans('Serial is required'),
-            'label.required' => trans('Label is required'),
+            'slider_image.required' => trans('admin_validation.Slider image is required'),
+            'title.required' => trans('admin_validation.Title is required'),
+            'description.required' => trans('admin_validation.Description is required'),
+            'product_slug.required' => trans('admin_validation.Link is required'),
+            'status.required' => trans('admin_validation.Status is required'),
+            'serial.required' => trans('admin_validation.Serial is required'),
+            'label.required' => trans('admin_validation.Label is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -51,16 +55,23 @@ class SliderController extends Controller
             $slider->image = $slider_image;
         }
 
-        $slider->title = $request->title;
-        $slider->description = $request->description;
-        $slider->link = $request->button_link;
+
+        $slider->product_slug = $request->product_slug;
         $slider->serial = $request->serial;
         $slider->status = $request->status;
-        $slider->label = $request->label;
+        $slider->title_one = $request->title_one;
+        $slider->title_two = $request->title_two;
+        $slider->badge = $request->badge;
+        $slider->btn_text1 = $request->btn_text1;
+        $slider->btn_text2 = $request->btn_text2;
+        $slider->btn_url1 = $request->btn_url1;
+        $slider->btn_url2 = $request->btn_url2;
+        $slider->description = $request->description;
         $slider->save();
 
-        $notification= trans('Created Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification= trans('admin_validation.Created Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function show($id){
@@ -68,23 +79,24 @@ class SliderController extends Controller
         return response()->json(['slider' => $slider], 200);
     }
 
+    public function edit($id){
+        $slider = Slider::find($id);
+        $products = Product::where(['status' => 1])->select('id','name','slug')->get();
+        return view('admin.edit_slider', compact('slider','products'));
+    }
 
     public function update(Request $request, $id){
         $rules = [
-            'title' => 'required',
-            'description' => 'required',
-            'button_link' => 'required',
             'status' => 'required',
             'serial' => 'required',
-            'label' => 'required',
+            'title_one' => 'required',
+            'title_two' => 'required',
+
         ];
         $customMessages = [
-            'title.required' => trans('Title is required'),
-            'description.required' => trans('Description is required'),
-            'button_link.required' => trans('Button link is required'),
-            'status.required' => trans('Status is required'),
-            'serial.required' => trans('Serial is required'),
-            'label.required' => trans('Label is required'),
+            'product_slug.required' => trans('admin_validation.Link is required'),
+            'status.required' => trans('admin_validation.Status is required'),
+            'serial.required' => trans('admin_validation.Serial is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -103,16 +115,22 @@ class SliderController extends Controller
             }
         }
 
-        $slider->title = $request->title;
-        $slider->description = $request->description;
-        $slider->link = $request->button_link;
+        $slider->product_slug = $request->product_slug;
         $slider->serial = $request->serial;
         $slider->status = $request->status;
-        $slider->label = $request->label;
+        $slider->title_one = $request->title_one;
+        $slider->title_two = $request->title_two;
+        $slider->badge = $request->badge;
+        $slider->btn_text1 = $request->btn_text1;
+        $slider->btn_text2 = $request->btn_text2;
+        $slider->btn_url1 = $request->btn_url1;
+        $slider->btn_url2 = $request->btn_url2;
+        $slider->description = $request->description;
         $slider->save();
 
-        $notification= trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification= trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.slider.index')->with($notification);
     }
 
     public function destroy($id){
@@ -123,8 +141,9 @@ class SliderController extends Controller
             if(File::exists(public_path().'/'.$existing_slider))unlink(public_path().'/'.$existing_slider);
         }
 
-        $notification= trans('Delete Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification= trans('admin_validation.Delete Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 
@@ -133,11 +152,11 @@ class SliderController extends Controller
         if($slider->status==1){
             $slider->status=0;
             $slider->save();
-            $message= trans('Inactive Successfully');
+            $message= trans('admin_validation.Inactive Successfully');
         }else{
             $slider->status=1;
             $slider->save();
-            $message= trans('Active Successfully');
+            $message= trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }

@@ -9,9 +9,7 @@ class Message extends Model
 {
     use HasFactory;
 
-    public function seller(){
-        return $this->belongsTo(User::class,'seller_id');
-    }
+
 
     public function product(){
         return $this->belongsTo(Product::class)->select('id','name','short_name','slug','thumb_image');

@@ -9,13 +9,13 @@ class SpecificationKeyController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index()
     {
         $SpecificationKeys = ProductSpecificationKey::with('productSpecifications')->get();
-        return response()->json(['SpecificationKeys' => $SpecificationKeys], 200);
+        return view('admin.specification_key',compact('SpecificationKeys'));
     }
 
     public function create()
@@ -30,8 +30,8 @@ class SpecificationKeyController extends Controller
             'status' => 'required'
         ];
         $customMessages = [
-            'key.required' => trans('Key is required'),
-            'key.unique' => trans('Key already exist'),
+            'key.required' => trans('admin_validation.Key is required'),
+            'key.unique' => trans('admin_validation.Key already exist'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -40,8 +40,9 @@ class SpecificationKeyController extends Controller
         $SpecificationKey->status = $request->status;
         $SpecificationKey->save();
 
-        $notification = trans('Created Successfully');
-        return response()->json(['message' => $notification],200);
+        $notification = trans('admin_validation.Created Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function show($id)
@@ -66,8 +67,8 @@ class SpecificationKeyController extends Controller
             'status' => 'required'
         ];
         $customMessages = [
-            'key.required' => trans('Key is required'),
-            'key.unique' => trans('Key already exist'),
+            'key.required' => trans('admin_validation.Key is required'),
+            'key.unique' => trans('admin_validation.Key already exist'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -75,8 +76,9 @@ class SpecificationKeyController extends Controller
         $SpecificationKey->status = $request->status;
         $SpecificationKey->save();
 
-        $notification = trans('Update Successfully');
-        return response()->json(['message' => $notification],200);
+        $notification = trans('admin_validation.Update Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.specification-key.index')->with($notification);
     }
 
     public function destroy($id)
@@ -84,8 +86,9 @@ class SpecificationKeyController extends Controller
         $SpecificationKey = ProductSpecificationKey::find($id);
         $SpecificationKey->delete();
 
-        $notification=trans('Delete Successfully');
-        return response()->json(['message' => $notification],200);
+        $notification=trans('admin_validation.Delete Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.specification-key.index')->with($notification);
     }
 
     public function changeStatus($id){
@@ -93,11 +96,11 @@ class SpecificationKeyController extends Controller
         if($SpecificationKey->status == 1){
             $SpecificationKey->status = 0;
             $SpecificationKey->save();
-            $message = trans('Inactive Successfully');
+            $message = trans('admin_validation.Inactive Successfully');
         }else{
             $SpecificationKey->status = 1;
             $SpecificationKey->save();
-            $message = trans('Active Successfully');
+            $message = trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }

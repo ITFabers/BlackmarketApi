@@ -13,24 +13,24 @@
               <div class="breadcrumb-item">{{__('admin.Products')}}</div>
             </div>
           </div>
-          <div class="section-body">
+          <div class="section-body products">
             <a href="{{ route('admin.product.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> {{__('admin.Add New')}}</a>
             <div class="row mt-4">
                 <div class="col">
                   <div class="card">
                     <div class="card-body">
                       <div class="table-responsive table-invoice">
-                        <table class="table table-striped" id="dataTable">
+                        <table class="table table-striped" id="dataTableMy">
                             <thead>
                                 <tr>
                                     <th width="5%">{{__('admin.SN')}}</th>
-                                    <th width="30%">{{__('admin.Name')}}</th>
-                                    <th width="10%">{{__('admin.Category')}}</th>
-                                    <th width="15%">{{__('admin.Photo')}}</th>
-                                    <th width="15%">{{__('admin.Type')}}</th>
-
-                                    <th width="10%">{{__('admin.Status')}}</th>
-                                    <th width="15%">{{__('admin.Action')}}</th>
+                                    <th width="5%">{{__('admin.Name')}}</th>
+                                    <th width="25%">{{__('admin.Category')}}</th>
+                                    <th width="20%">{{__('admin.Brand')}}</th>
+                                    <th width="10%">{{__('admin.Photo')}}</th>
+                                    <th width="5%">{{__('admin.Type')}}</th>
+                                    <th width="5%">{{__('admin.Status')}}</th>
+                                    <th width="20%">{{__('admin.Action')}}</th>
                                   </tr>
                             </thead>
                             <tbody>
@@ -39,7 +39,10 @@
                                         <td>{{ ++$index }}</td>
                                         <td><a href="{{ route('admin.product.show',$product->id) }}">{{ $product->short_name }}</a></td>
                                         <td>{{ $product->getCategory() }}</td>
-                                        <td>@if(!empty($product->thumb_image)) <img class="rounded-circle" src="{{ asset($product->thumb_image) }}" alt="" width="100px" height="100px">@endif</td>
+                                        <td>{{ $product->brand?$product->brand->name:'' }}</td>
+
+                                        <td>@if(!empty($product->thumb_image)) 
+                                          <img class="rounded-circle" src="{{ $product->thumb_image }}" alt="" width="100px" height="100px">@endif</td>
                                         <td>
                                             @if ($product->new_product == 1)
                                             <span class="badge badge-primary p-1">{{__('admin.New')}}</span>
@@ -62,22 +65,22 @@
                                             @if($product->status == 1)
                                               @if(Auth::user()->admin_type==1)
                                                 <a href="javascript:;"  onclick="changeProductStatus({{$product->id}})">
-                                                    <input  id="status_toggle" {{(Auth::user()->admin_type==0)?'disabled="true"':''}}  type="checkbox" checked data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
+                                                    <input   {{(Auth::user()->admin_type==0)?'disabled="true"':''}}  type="checkbox" checked data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
                                                 </a>
                                               @else
                                                 <a href="javascript:;"  onclick="">
-                                                    <input  id="status_toggle" {{(Auth::user()->admin_type==0)?'disabled="true"':''}}  type="checkbox" checked data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
+                                                    <input   {{(Auth::user()->admin_type==0)?'disabled="true"':''}}  type="checkbox" checked data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
                                                 </a>
                                               @endif
                                             @else
                                             @if(Auth::user()->admin_type==1)
 
                                               <a href="javascript:;"  onclick="changeProductStatus({{$product->id}})" >
-                                                  <input id="status_toggle" {{(Auth::user()->admin_type==0)?'disabled="true"':''}}  type="checkbox" data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
+                                                  <input {{(Auth::user()->admin_type==0)?'disabled="true"':''}}  type="checkbox" data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
                                               </a>
                                               @else
                                               <a href="javascript:;"  onclick="" >
-                                                  <input id="status_toggle"  {{(Auth::user()->admin_type==0)?'disabled="true"':''}}  type="checkbox" data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
+                                                  <input  {{(Auth::user()->admin_type==0)?'disabled="true"':''}}  type="checkbox" data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
                                               </a>
                                               @endif
                                             @endif
@@ -98,7 +101,7 @@
 
 
                                         <div class="dropdown d-inline">
-                                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                               <i class="fas fa-cog"></i>
                                             </button>
 
@@ -137,12 +140,55 @@
               </div>
           </div>
       </div>
+      <script>
+      $(document).ready(function () {
+        var exampleDataTable = $('#dataTableMy').DataTable({
+           stateSave: true,
+           processing: true,
+      initComplete: function () {
+        this.api().columns([2,3]).every(function (d) {
+          var column = this;
+           var theadname = $("#dataTableMy th").eq([d]).html();
+          var select = $('<select class="form-control" style="width:100%"><option value="">' +theadname +": All</option></select>")
+            .appendTo($(column.header()).empty())
+            .on('change', function () {
+              var val = $.fn.dataTable.util.escapeRegex(
+                $(this).val()
+              );
+
+              column
+                .search(val ? '^' + val + '$' : '', true, false)
+                .draw();
+            });
+
+          column.data().unique().sort().each(function (d, j) {
+            select.append('<option value="' + d + '">' + d + '</option>')
+          });
+        });
+      }
+
+    });
+
+    // Event handler when position select is changed
+    $(exampleDataTable.columns(1).header()).find('select').on('change', function () {
+      var nextSelect = $(exampleDataTable.columns(2).header()).find('select');
+      var nextColumn = exampleDataTable.column(2);
+      var nextColumnResults = exampleDataTable.column(2, { search: 'applied' });
+      nextColumn.search('').draw();
+      nextSelect.empty();
+      nextSelect.append('<option value=""></option>');
+      nextColumnResults.data().unique().sort().each(function (d, j) {
+        nextSelect.append('<option value="' + d + '">' + d + '</option>')
+      });
+    });
+  });
+</script>
 <script>
     function deleteData(id){
         $("#deleteForm").attr("action",'{{ url("admin/product/") }}'+"/"+id)
     }
     function changeProductStatus(id){
-        var isDemo = "{{ env('APP_VERSION') }}"
+        var isDemo = 1
         if(isDemo == 0){
             toastr.error('This Is Demo Version. You Can Not Change Anything');
             return;

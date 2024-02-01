@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\FooterSocialLink;
+use Illuminate\Http\Request;
+
 class FooterSocialLinkController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index(){
         $links = FooterSocialLink::all();
-        return response()->json(['links' => $links], 200);
+        return view('admin.footer_social_link', compact('links'));
     }
 
     public function store(Request $request){
@@ -23,8 +24,8 @@ class FooterSocialLinkController extends Controller
             'icon' =>'required',
         ];
         $customMessages = [
-            'link.required' => trans('Link is required'),
-            'icon.required' => trans('Icon is required'),
+            'link.required' => trans('admin_validation.Link is required'),
+            'icon.required' => trans('admin_validation.Icon is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -33,8 +34,9 @@ class FooterSocialLinkController extends Controller
         $link->icon = $request->icon;
         $link->save();
 
-        $notification=trans('Create Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification=trans('admin_validation.Create Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function show($id){
@@ -48,8 +50,8 @@ class FooterSocialLinkController extends Controller
             'icon' =>'required',
         ];
         $customMessages = [
-            'link.required' => trans('Link is required'),
-            'icon.required' => trans('Icon is required'),
+            'link.required' => trans('admin_validation.Link is required'),
+            'icon.required' => trans('admin_validation.Icon is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -58,15 +60,17 @@ class FooterSocialLinkController extends Controller
         $link->icon = $request->icon;
         $link->save();
 
-        $notification=trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification=trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function destroy($id){
         $link = FooterSocialLink::find($id);
         $link->delete();
-        $notification=trans('Delete Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification=trans('admin_validation.Delete Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 }

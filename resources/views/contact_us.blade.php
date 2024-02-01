@@ -109,14 +109,6 @@
                                 </div>
                             </div>
 
-                            @if($recaptchaSetting->status==1)
-                                <div class="col-xl-12">
-                                    <div class="wsus__single_com mb-3">
-                                        <div class="g-recaptcha" data-sitekey="{{ $recaptchaSetting->site_key }}"></div>
-                                    </div>
-                                </div>
-                            @endif
-
                             <div class="col-12">
                                 <button type="submit" class="common_btn">{{__('send now')}}</button>
                             </div>

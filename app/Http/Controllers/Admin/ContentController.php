@@ -3,110 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\MaintainanceText;
 use App\Models\AnnouncementModal;
-use App\Models\Setting;
 use App\Models\BannerImage;
-use App\Models\ShopPage;
+use App\Models\MaintainanceText;
 use App\Models\SeoSetting;
-use Image;
+use App\Models\Setting;
+use App\Models\ShopPage;
 use File;
+use Illuminate\Http\Request;
+use Image;
+
 class ContentController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
-    }
-
-    public function maintainanceMode()
-    {
-        $maintainance = MaintainanceText::first();
-
-        return response()->json(['maintainance' => $maintainance], 200);
-
-    }
-
-    public function maintainanceModeUpdate(Request $request)
-    {
-        $rules = [
-            'description'=> 'required',
-            'status'=> 'required',
-        ];
-        $customMessages = [
-            'description.required' => trans('Description is required'),
-            'status.required' => trans('Status is required'),
-        ];
-        $this->validate($request, $rules,$customMessages);
-
-        $maintainance = MaintainanceText::first();
-        if($request->image){
-            $old_image=$maintainance->image;
-            $image=$request->image;
-            $ext=$image->getClientOriginalExtension();
-            $image_name= 'maintainance-mode-'.date('Y-m-d-h-i-s-').rand(999,9999).'.'.$ext;
-            $image_name='uploads/website-images/'.$image_name;
-            Image::make($image)
-                ->save(public_path().'/'.$image_name);
-            $maintainance->image=$image_name;
-            $maintainance->save();
-            if($old_image){
-                if(File::exists(public_path().'/'.$old_image))unlink(public_path().'/'.$old_image);
-            }
-        }
-        $maintainance->status = $request->maintainance_mode ? 1 : 0;
-        $maintainance->description = $request->description;
-        $maintainance->save();
-
-        $notification= trans('Updated Successfully');
-        return response()->json(['notification' => $notification], 200);
-    }
-
-    public function announcementModal(){
-        $announcement = AnnouncementModal::first();
-
-        return response()->json(['announcement' => $announcement], 200);
-    }
-
-    public function announcementModalUpdate(Request $request)
-    {
-        $rules = [
-            'description' => 'required',
-            'title' => 'required',
-            'expired_date' => 'required',
-            'status' => 'required',
-        ];
-        $customMessages = [
-            'description.required' => trans('Description is required'),
-            'title.required' => trans('Title is required'),
-            'status.required' => trans('Status is required'),
-            'expired_date.required' => trans('Expired date is required'),
-        ];
-        $this->validate($request, $rules,$customMessages);
-
-        $announcement = AnnouncementModal::first();
-        if($request->image){
-            $old_image=$announcement->image;
-            $image=$request->image;
-            $ext=$image->getClientOriginalExtension();
-            $image_name= 'announcement-'.date('Y-m-d-h-i-s-').rand(999,9999).'.'.$ext;
-            $image_name='uploads/website-images/'.$image_name;
-            Image::make($image)
-                ->save(public_path().'/'.$image_name);
-            $announcement->image=$image_name;
-            $announcement->save();
-            if($old_image){
-                if(File::exists(public_path().'/'.$old_image))unlink(public_path().'/'.$old_image);
-            }
-        }
-        $announcement->description = $request->description;
-        $announcement->title = $request->title;
-        $announcement->expired_date = $request->expired_date;
-        $announcement->status = $request->status ? 1 : 0;
-        $announcement->save();
-
-        $notification= trans('Updated Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $this->middleware('auth:admin');
     }
 
     public function headerPhoneNumber(){
@@ -121,8 +32,8 @@ class ContentController extends Controller
             'topbar_email'=>'required',
         ];
         $customMessages = [
-            'topbar_phone.required' => trans('Topbar phone is required'),
-            'topbar_email.required' => trans('Topbar email is required'),
+            'topbar_phone.required' => trans('admin_validation.Topbar phone is required'),
+            'topbar_email.required' => trans('admin_validation.Topbar email is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -131,13 +42,13 @@ class ContentController extends Controller
         $setting->topbar_email = $request->topbar_email;
         $setting->save();
 
-        $notification= trans('Update Successfully');
+        $notification= trans('admin_validation.Update Successfully');
         return response()->json(['notification' => $notification], 200);
     }
 
     public function loginPage(){
         $banner = BannerImage::select('image')->whereId('13')->first();
-        return response()->json(['banner' => $banner], 200);
+        return view('admin.login_page', compact('banner'));
 
     }
 
@@ -158,35 +69,14 @@ class ContentController extends Controller
             }
         }
 
-        $notification = trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
-    }
-
-    public function shopPage(){
-        $shop_page = ShopPage::first();
-        return response()->json(['shop_page' => $shop_page], 200);
-    }
-
-    public function updateFilterPrice(Request $request){
-        $rules = [
-            'filter_price_range' => 'required|numeric',
-        ];
-        $customMessages = [
-            'filter_price_range.required' => trans('Filter price is required'),
-            'filter_price_range.numeric' => trans('Filter price should be numeric number'),
-        ];
-        $this->validate($request, $rules,$customMessages);
-
-        $shop_page = ShopPage::first();
-        $shop_page->filter_price_range = $request->filter_price_range;
-        $shop_page->save();
-        $notification = trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification = trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function seoSetup(){
         $pages = SeoSetting::all();
-        return response()->json(['pages' => $pages], 200);
+        return view('admin.seo_setup', compact('pages'));
     }
 
     public function getSeoSetup($id){
@@ -200,8 +90,8 @@ class ContentController extends Controller
             'seo_description' => 'required'
         ];
         $customMessages = [
-            'seo_title.required' => trans('Seo title is required'),
-            'seo_description.required' => trans('Seo description is required'),
+            'seo_title.required' => trans('admin_validation.Seo title is required'),
+            'seo_description.required' => trans('admin_validation.Seo description is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -210,8 +100,9 @@ class ContentController extends Controller
         $page->seo_description = $request->seo_description;
         $page->save();
 
-        $notification = trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification = trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
 
     }
 
@@ -226,18 +117,18 @@ class ContentController extends Controller
         if($setting->show_product_progressbar == 1){
             $setting->show_product_progressbar = 0;
             $setting->save();
-            $message = trans('Inactive Successfully');
+            $message = trans('admin_validation.Inactive Successfully');
         }else{
             $setting->show_product_progressbar = 1;
             $setting->save();
-            $message = trans('Active Successfully');
+            $message = trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }
 
     public function defaultAvatar(){
         $defaultProfile = BannerImage::select('title','image')->whereId('15')->first();
-        return response()->json(['defaultProfile' => $defaultProfile], 200);
+        return view('admin.default_profile_image', compact('defaultProfile'));
     }
 
     public function updateDefaultAvatar(Request $request){
@@ -256,69 +147,102 @@ class ContentController extends Controller
             }
         }
 
-        $notification = trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification = trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
-    public function sellerCondition(){
-        $seller_condition = Setting::select('seller_condition')->first();
-        return response()->json(['seller_condition' => $seller_condition], 200);
+    public function image_content(){
+
+        $image_content = Setting::select('empty_cart','empty_wishlist', 'change_password_image','login_image','error_page')->first();
+
+        return view('admin.image_content', compact('image_content'));
     }
 
-    public function updatesellerCondition(Request $request){
-        $rules = [
-            'terms_and_condition' => 'required'
-        ];
-        $customMessages = [
-            'terms_and_condition.required' => trans('Terms and condition is required')
-        ];
-        $this->validate($request, $rules,$customMessages);
+    public function updateImageContent(Request $request){
+        $image_content = Setting::first();
 
-        $setting = Setting::first();
-        $setting->seller_condition = $request->terms_and_condition;
-        $setting->save();
-        $notification = trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
-    }
-
-    public function subscriptionBanner(){
-        $subscription_banner = BannerImage::select('id','image','banner_location','header','title')->find(27);
-        return response()->json(['subscription_banner' => $subscription_banner], 200);
-    }
-
-    public function updatesubscriptionBanner(Request $request){
-        $rules = [
-            'title' => 'required',
-            'header' => 'required'
-        ];
-        $customMessages = [
-            'title.required' => trans('Title is required'),
-            'header.required' => trans('Header is required')
-        ];
-        $this->validate($request, $rules,$customMessages);
-
-        $subscription_banner = BannerImage::find(27);
-        if($request->image){
-            $existing_banner = $subscription_banner->image;
-            $extention = $request->image->getClientOriginalExtension();
-            $banner_name = 'banner'.date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
+        if($request->empty_cart){
+            $existing_banner = $image_content->empty_cart;
+            $extention = $request->empty_cart->getClientOriginalExtension();
+            $banner_name = 'empty_cart'.date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
             $banner_name = 'uploads/website-images/'.$banner_name;
-            Image::make($request->image)
+            Image::make($request->empty_cart)
                 ->save(public_path().'/'.$banner_name);
-            $subscription_banner->image = $banner_name;
-            $subscription_banner->save();
+            $image_content->empty_cart = $banner_name;
+            $image_content->save();
             if($existing_banner){
                 if(File::exists(public_path().'/'.$existing_banner))unlink(public_path().'/'.$existing_banner);
             }
         }
-        $subscription_banner->title = $request->title;
-        $subscription_banner->header = $request->header;
-        $subscription_banner->save();
 
-        $notification = trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
+        if($request->empty_wishlist){
+            $existing_banner = $image_content->empty_wishlist;
+            $extention = $request->empty_wishlist->getClientOriginalExtension();
+            $banner_name = 'empty_wishlist'.date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
+            $banner_name = 'uploads/website-images/'.$banner_name;
+            Image::make($request->empty_wishlist)
+                ->save(public_path().'/'.$banner_name);
+            $image_content->empty_wishlist = $banner_name;
+            $image_content->save();
+            if($existing_banner){
+                if(File::exists(public_path().'/'.$existing_banner))unlink(public_path().'/'.$existing_banner);
+            }
+        }
+
+        if($request->change_password_image){
+            $existing_banner = $image_content->change_password_image;
+            $extention = $request->change_password_image->getClientOriginalExtension();
+            $banner_name = 'change_password_image'.date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
+            $banner_name = 'uploads/website-images/'.$banner_name;
+            Image::make($request->change_password_image)
+                ->save(public_path().'/'.$banner_name);
+            $image_content->change_password_image = $banner_name;
+            $image_content->save();
+            if($existing_banner){
+                if(File::exists(public_path().'/'.$existing_banner))unlink(public_path().'/'.$existing_banner);
+            }
+        }
+
+
+
+        if($request->login_image){
+            $existing_banner = $image_content->login_image;
+            $extention = $request->login_image->getClientOriginalExtension();
+            $banner_name = 'login_image'.date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
+            $banner_name = 'uploads/website-images/'.$banner_name;
+            Image::make($request->login_image)
+                ->save(public_path().'/'.$banner_name);
+            $image_content->login_image = $banner_name;
+            $image_content->save();
+            if($existing_banner){
+                if(File::exists(public_path().'/'.$existing_banner))unlink(public_path().'/'.$existing_banner);
+            }
+        }
+
+        if($request->error_page){
+            $existing_banner = $image_content->error_page;
+            $extention = $request->error_page->getClientOriginalExtension();
+            $banner_name = 'error_page'.date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
+            $banner_name = 'uploads/website-images/'.$banner_name;
+            Image::make($request->error_page)
+                ->save(public_path().'/'.$banner_name);
+            $image_content->error_page = $banner_name;
+            $image_content->save();
+            if($existing_banner){
+                if(File::exists(public_path().'/'.$existing_banner))unlink(public_path().'/'.$existing_banner);
+            }
+        }
+
+
+
+
+
+        $notification = trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
+
 
     }
-
 
 }

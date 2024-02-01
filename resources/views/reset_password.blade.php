@@ -61,14 +61,6 @@
                                     <input type="password" placeholder="{{__('Confirm Password')}}" name="password_confirmation">
                                 </div>
 
-                                @if($recaptchaSetting->status==1)
-                                    <div class="col-xl-12">
-                                        <div class="wsus__single_com mb-3">
-                                            <div class="g-recaptcha" data-sitekey="{{ $recaptchaSetting->site_key }}"></div>
-                                        </div>
-                                    </div>
-                                @endif
-
                                 <button class="common_btn" type="submit">{{__('Reset Password')}}</button>
                             </form>
                         </div>

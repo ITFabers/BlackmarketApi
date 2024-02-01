@@ -2,44 +2,46 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\FooterLink;
 use App\Models\Footer;
+use App\Models\FooterLink;
+use Illuminate\Http\Request;
+
 class FooterLinkController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index(){
         $links = FooterLink::where('column',1)->get();
         $column = 1;
-        $title = trans('First Column Link');
+        $title = trans('admin_validation.First Column Link');
         $footer = Footer::first();
         $columnTitle = $footer->first_column;
 
-        return response()->json(['links' => $links, 'column' => $column, 'title' => $title, 'columnTitle' => $columnTitle, 'footer' => $footer], 200);
+        return view('admin.footer_link', compact('links','column','title','columnTitle'));
+
     }
 
     public function secondColFooterLink(){
         $links = FooterLink::where('column',2)->get();
         $column = 2;
-        $title = trans('Second Column Link');
+        $title = trans('admin_validation.Second Column Link');
         $footer = Footer::first();
         $columnTitle = $footer->second_column;
 
-        return response()->json(['links' => $links, 'column' => $column, 'title' => $title, 'columnTitle' => $columnTitle, 'footer' => $footer], 200);
+        return view('admin.footer_link', compact('links','column','title','columnTitle'));
     }
 
     public function thirdColFooterLink(){
         $links = FooterLink::where('column',3)->get();
         $column = 3;
-        $title = trans('Third Column Link');
+        $title = trans('admin_validation.Third Column Link');
         $footer = Footer::first();
         $columnTitle = $footer->third_column;
 
-        return response()->json(['links' => $links, 'column' => $column, 'title' => $title, 'columnTitle' => $columnTitle, 'footer' => $footer], 200);
+        return view('admin.footer_link', compact('links','column','title','columnTitle'));
     }
 
 
@@ -51,9 +53,9 @@ class FooterLinkController extends Controller
             'column' =>'required',
         ];
         $customMessages = [
-            'link.required' => trans('Link is required'),
-            'name.required' => trans('Name is required'),
-            'column.required' => trans('Column is required'),
+            'link.required' => trans('admin_validation.Link is required'),
+            'name.required' => trans('admin_validation.Name is required'),
+            'column.required' => trans('admin_validation.Column is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -63,8 +65,9 @@ class FooterLinkController extends Controller
         $link->column = $request->column;
         $link->save();
 
-        $notification=trans('Create Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification=trans('admin_validation.Create Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function show($id){
@@ -78,8 +81,8 @@ class FooterLinkController extends Controller
             'link' =>'required',
         ];
         $customMessages = [
-            'link.required' => trans('Link is required'),
-            'name.required' => trans('Name is required'),
+            'link.required' => trans('admin_validation.Link is required'),
+            'name.required' => trans('admin_validation.Name is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -88,15 +91,17 @@ class FooterLinkController extends Controller
         $link->title = $request->name;
         $link->save();
 
-        $notification= trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification= trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function destroy($id){
         $link = FooterLink::find($id);
         $link->delete();
-        $notification=trans('Delete Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification=trans('admin_validation.Delete Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function updateColTitle(Request $request, $id){
@@ -104,7 +109,7 @@ class FooterLinkController extends Controller
             'title' =>'required'
         ];
         $customMessages = [
-            'title.required' => trans('Title is required'),
+            'title.required' => trans('admin_validation.Title is required'),
         ];
         $this->validate($request, $rules,$customMessages);
         $footer = Footer::first();
@@ -118,8 +123,9 @@ class FooterLinkController extends Controller
             $footer->third_column = $request->title;
             $footer->save();
         }
-        $notification=trans('Update Successfully');
-        return response()->json(['notification' => $notification], 200);
+        $notification=trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
 
     }
 

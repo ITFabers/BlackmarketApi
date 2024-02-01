@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\TermsAndCondition;
+use File;
 use Illuminate\Http\Request;
 use Image;
-use File;
+
 class PrivacyPolicyController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index()
@@ -22,7 +23,7 @@ class PrivacyPolicyController extends Controller
             $isPrivacyPolicy = true;
         }
 
-        return response()->json(['privacyPolicy' => $privacyPolicy, 'isPrivacyPolicy' => $isPrivacyPolicy]);
+        return view('admin.privacy_policy',compact('privacyPolicy','isPrivacyPolicy'));
     }
 
 
@@ -32,7 +33,7 @@ class PrivacyPolicyController extends Controller
             'privacy_policy' => 'required',
         ];
         $customMessages = [
-            'privacy_policy.required' => trans('Privacy policy is required')
+            'privacy_policy.required' => trans('admin_validation.Privacy policy is required')
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -41,8 +42,9 @@ class PrivacyPolicyController extends Controller
         $privacyPolicy->privacy_policy = $request->privacy_policy;
         $privacyPolicy->save();
 
-        $notification = trans('Created Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification = trans('admin_validation.Created Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 
@@ -54,14 +56,15 @@ class PrivacyPolicyController extends Controller
             'privacy_policy' => 'required',
         ];
         $customMessages = [
-            'privacy_policy.required' => trans('Privacy policy is required'),
+            'privacy_policy.required' => trans('admin_validation.Privacy policy is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
         $privacyPolicy->privacy_policy = $request->privacy_policy;
         $privacyPolicy->save();
 
-        $notification = trans('Updated Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification = trans('admin_validation.Updated Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 }

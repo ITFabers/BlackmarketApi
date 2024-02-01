@@ -115,13 +115,6 @@
                             $end = strtotime($campaign->end_date);
                             $current_time=  Carbon\Carbon::now()->timestamp;
                             $capmaign_time = $end - $current_time;
-
-                            if(env('APP_VERSION') == 0){
-                                $demo_end = Carbon\Carbon::now()->addDays(3);
-                                $demo_end = $demo_end->format('Y-m-d H:i:s');
-                                $end = strtotime($demo_end);
-                                $capmaign_time = $end - $current_time;
-                             }
                         @endphp
                         <script>
                             var capmaign_time = {{ $capmaign_time }};
@@ -1065,23 +1058,6 @@
                 $productYears = [];
                 $productMonths = [];
                 $productDays = [];
-
-                if(env('APP_VERSION') == 0){
-                    $demo_end = Carbon\Carbon::now()->addDays(3);
-                    foreach ($flashDealProducts as $key => $flashDealProduct) {
-                        $productIds[] = $flashDealProduct->id;
-                        $productYears[] = $demo_end->format('Y');
-                        $productMonths[] = $demo_end->format('m');;
-                        $productDays[] = $demo_end->format('d');
-                    }
-                }else {
-                    foreach ($flashDealProducts as $key => $flashDealProduct) {
-                        $productIds[] = $flashDealProduct->id;
-                        $productYears[] = date('Y', strtotime($flashDealProduct->flash_deal_date));
-                        $productMonths[] = date('m', strtotime($flashDealProduct->flash_deal_date));
-                        $productDays[] = date('d', strtotime($flashDealProduct->flash_deal_date));
-                    }
-                }
 
             @endphp
             <script>

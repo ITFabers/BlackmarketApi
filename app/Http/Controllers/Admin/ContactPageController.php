@@ -3,20 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\ContactPage;
-use Image;
 use File;
+use Illuminate\Http\Request;
+use Image;
+
 class ContactPageController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index(){
         $contact = ContactPage::first();
-        return response()->json(['contact' => $contact]);
+        return view('admin.contact_page', compact('contact'));
     }
     public function store(Request $request){
         $rules = [
@@ -28,12 +29,12 @@ class ContactPageController extends Controller
             'description' => 'required',
         ];
         $customMessages = [
-            'email.required' => trans('Email is required'),
-            'phone.unique' => trans('Phone is required'),
-            'address.unique' => trans('Address is required'),
-            'title.unique' => trans('Title is required'),
-            'google_map.unique' => trans('Google Map is required'),
-            'description.unique' => trans('Description is required'),
+            'email.required' => trans('admin_validation.Email is required'),
+            'phone.unique' => trans('admin_validation.Phone is required'),
+            'address.unique' => trans('admin_validation.Address is required'),
+            'title.unique' => trans('admin_validation.Title is required'),
+            'google_map.unique' => trans('admin_validation.Google Map is required'),
+            'description.unique' => trans('admin_validation.Description is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -48,8 +49,9 @@ class ContactPageController extends Controller
         $contact->save();
 
 
-        $notification = trans('Create Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification = trans('admin_validation.Create Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function update(Request $request, $id){
@@ -62,12 +64,12 @@ class ContactPageController extends Controller
             'description' => 'required',
         ];
         $customMessages = [
-            'email.required' => trans('Email is required'),
-            'phone.unique' => trans('Phone is required'),
-            'address.unique' => trans('Address is required'),
-            'title.unique' => trans('Title is required'),
-            'google_map.unique' => trans('Google Map is required'),
-            'description.unique' => trans('Description is required'),
+            'email.required' => trans('admin_validation.Email is required'),
+            'phone.unique' => trans('admin_validation.Phone is required'),
+            'address.unique' => trans('admin_validation.Address is required'),
+            'title.unique' => trans('admin_validation.Title is required'),
+            'google_map.unique' => trans('admin_validation.Google Map is required'),
+            'description.unique' => trans('admin_validation.Description is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -94,8 +96,9 @@ class ContactPageController extends Controller
         $contact->description = $request->description;
         $contact->save();
 
-        $notification = trans('Updated Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification = trans('admin_validation.Updated Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 }

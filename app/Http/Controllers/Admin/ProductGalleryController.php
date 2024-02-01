@@ -3,17 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProductGallery;
 use App\Models\Product;
+use App\Models\ProductGallery;
+use File;
 use Illuminate\Http\Request;
 use Image;
-use File;
 use Str;
+
 class ProductGalleryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index($productId)
@@ -22,11 +23,12 @@ class ProductGalleryController extends Controller
         if($product){
             $gallery = ProductGallery::where('product_id',$productId)->get();
 
-            return response()->json(['product' => $product, 'gallery' => $gallery]);
+            return view('admin.product_image_gallery',compact('gallery','product'));
 
         }else{
-            $notification = trans('Something went wrong');
-            return response()->json(['message' => $notification],400);
+            $notification = trans('admin_validation.Something went wrong');
+            $notification=array('messege'=>$notification,'alert-type'=>'error');
+            return redirect()->route('admin.product.index')->with($notification);
         }
 
     }
@@ -39,8 +41,8 @@ class ProductGalleryController extends Controller
         ];
 
         $customMessages = [
-            'images.required' => trans('Image is required'),
-            'product_id.required' => trans('Product is required'),
+            'images.required' => trans('admin_validation.Image is required'),
+            'product_id.required' => trans('admin_validation.Product is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -59,12 +61,14 @@ class ProductGalleryController extends Controller
                     $gallery->save();
                 }
 
-                $notification = trans('Uploaded Successfully');
-                return response()->json(['message' => $notification],200);
+                $notification = trans('admin_validation.Uploaded Successfully');
+                $notification=array('messege'=>$notification,'alert-type'=>'success');
+                return redirect()->back()->with($notification);
             }
         }else{
-            $notification = trans('Something went wrong');
-            return response()->json(['message' => $notification],400);
+            $notification = trans('admin_validation.Something went wrong');
+            $notification=array('messege'=>$notification,'alert-type'=>'error');
+            return redirect()->back()->with($notification);
         }
 
     }
@@ -79,8 +83,9 @@ class ProductGalleryController extends Controller
             if(File::exists(public_path().'/'.$old_image))unlink(public_path().'/'.$old_image);
         }
 
-        $notification = trans('Delete Successfully');
-        return response()->json(['message' => $notification],200);
+        $notification = trans('admin_validation.Delete Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function changeStatus($id){
@@ -88,11 +93,11 @@ class ProductGalleryController extends Controller
         if($gallery->status == 1){
             $gallery->status = 0;
             $gallery->save();
-            $message = trans('Inactive Successfully');
+            $message = trans('admin_validation.Inactive Successfully');
         }else{
             $gallery->status = 1;
             $gallery->save();
-            $message = trans('Active Successfully');
+            $message = trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }

@@ -98,11 +98,6 @@
                                     <th class="name">
                                         {{__('product')}}
                                     </th>
-                                    @if ($setting->enable_multivendor == 1)
-                                    <th class="amount">
-                                        {{__('Shop Name')}}
-                                    </th>
-                                    @endif
                                     <th class="amount">
                                         {{__('Unit Price')}}
                                     </th>
@@ -127,13 +122,6 @@
                                         @endforeach
 
                                     </td>
-                                    @if ($setting->enable_multivendor == 1)
-                                    <td class="amount">
-                                        @if ($orderProduct->seller)
-                                            <a href="{{ route('seller-detail',['shop_name' => $orderProduct->seller->slug]) }}">{{  $orderProduct->seller->shop_name }}</a>
-                                        @endif
-                                    </td>
-                                    @endif
                                     <td class="quentity">
                                         {{ $setting->currency_icon }}{{ $orderProduct->unit_price }}
                                     </td>

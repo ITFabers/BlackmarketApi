@@ -1,15 +1,10 @@
 @php
     $setting = App\Models\Setting::first();
-    $announcementModal = App\Models\AnnouncementModal::first();
     $productCategories = App\Models\Category::where(['status' => 1])->get();
-    $megaMenuCategories = App\Models\MegaMenuCategory::orderBy('serial','asc')->where('status',1)->get();
     $megaMenuBanner = App\Models\BannerImage::find(1);
     $modalProducts = App\Models\Product::all();
     $currencySetting = App\Models\Setting::first();
-    $menus = App\Models\MenuVisibility::select('status','id')->get();
-    $customPages = App\Models\CustomPage::where('status',1)->get();
     $googleAnalytic = App\Models\GoogleAnalytic::first();
-    $facebookPixel = App\Models\FacebookPixel::first();
 @endphp
 
 <!DOCTYPE html>
@@ -53,7 +48,6 @@
 
     <!--jquery library js-->
     <script src="{{ asset('user/js/jquery-3.6.0.min.js') }}"></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 
     @if ($googleAnalytic->status == 1)
@@ -66,23 +60,7 @@
     </script>
     @endif
 
-    @if ($facebookPixel->status == 1)
-        <script>
-        !function(f,b,e,v,n,t,s)
-        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)}(window, document,'script',
-        'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '{{ $facebookPixel->app_id }}');
-        fbq('track', 'PageView');
-        </script>
-        <noscript><img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id={{ $facebookPixel->app_id }}&ev=PageView&noscript=1"
-    /></noscript>
-    @endif
+
 
     <script>
         var end_year = '';
@@ -367,11 +345,7 @@
                             @endif
                         </li>
                         @endif
-                        @if ($menus->where('id',4)->first()->status == 1)
-                            @if ($setting->enable_multivendor == 1)
-                                <li><a href="{{ route('sellers') }}">{{__('Sellers')}}</a></li>
-                            @endif
-                        @endif
+
                         @if ($menus->where('id',5)->first()->status == 1)
                         <li><a href="{{ route('blog') }}">{{__('Blog')}}</a></li>
                         @endif
@@ -529,11 +503,7 @@
                                 <li><a href="{{ route('product') }}">{{__('Shop')}}</a></li>
                                 @endif
                             @endif
-                            @if ($menus->where('id',4)->first()->status == 1)
-                                @if ($setting->enable_multivendor == 1)
-                                <li><a href="{{ route('sellers') }}">{{__('Sellers')}}</a></li>
-                                @endif
-                            @endif
+
                             @if ($menus->where('id',5)->first()->status == 1)
                             <li><a href="{{ route('blog') }}">{{__('Blog') }}</a></li>
                             @endif
@@ -638,251 +608,7 @@
     </script>
 
     @endif
-    <!--==========================
-           POP UP END
-    ===========================-->
 
-
-    <!--==========================
-      PRODUCT MODAL VIEW START
-    ===========================-->
-    {{-- @foreach ($modalProducts as $modalProducts)
-        <section class="product_popup_modal">
-            <div class="modal fade" id="productModalView-{{ $modalProducts->id }}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i
-                                    class="far fa-times"></i></button>
-                            <div class="row">
-                                <div class="col-xl-6 col-12 col-sm-10 col-md-8 col-lg-6 m-auto display">
-                                    <div class="wsus__quick_view_img">
-                                        @if ($modalProducts->video_link)
-                                            @php
-                                                $video_id=explode("=",$modalProducts->video_link);
-                                            @endphp
-                                            <a class="venobox wsus__pro_det_video" data-autoplay="true" data-vbtype="video"
-                                            href="https://youtu.be/{{ $video_id[1] }}">
-                                            <i class="fas fa-play"></i>
-                                        </a>
-                                        @endif
-
-                                        <div class="row modal_slider">
-                                            @foreach ($modalProducts->gallery as $image)
-                                            <div class="col-xl-12">
-                                                <div class="modal_slider_img">
-                                                    <img src="{{ asset($image->image) }}" alt="product" class="img-fluid w-100">
-                                                </div>
-                                            </div>
-                                            @endforeach
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-6 col-12 col-sm-12 col-md-12 col-lg-6">
-                                    <div class="wsus__pro_details_text">
-                                        <a class="title" href="{{ route('product-detail', $modalProducts->slug) }}">{{ $modalProducts->name }}</a>
-
-                                            @if ($modalProducts->qty == 0)
-                                            <p class="wsus__stock_area"><span class="in_stock">{{__('Out of Stock')}}</span></p>
-                                            @else
-                                                <p class="wsus__stock_area"><span class="in_stock">{{__('In stock')}}
-                                                    @if ($setting->show_product_qty == 1)
-                                                        </span> ({{ $modalProducts->qty }} {{__('item')}})
-                                                    @endif
-                                                </p>
-                                            @endif
-
-
-                                        @php
-                                            $reviewQty = $modalProducts->reviews->where('status',1)->count();
-                                            $totalReview = $modalProducts->reviews->where('status',1)->sum('rating');
-
-                                            if ($reviewQty > 0) {
-                                                $average = $totalReview / $reviewQty;
-
-                                                $intAverage = intval($average);
-
-                                                $nextValue = $intAverage + 1;
-                                                $reviewPoint = $intAverage;
-                                                $halfReview=false;
-                                                if($intAverage < $average && $average < $nextValue){
-                                                    $reviewPoint= $intAverage + 0.5;
-                                                    $halfReview=true;
-                                                }
-                                            }
-                                        @endphp
-
-                                        @php
-                                            $variantPrice = 0;
-                                            $variants = $modalProducts->variants->where('status', 1);
-                                            if($variants->count() != 0){
-                                                foreach ($variants as $variants_key => $variant) {
-                                                    if($variant->variantItems->where('status',1)->count() != 0){
-                                                        $item = $variant->variantItems->where('is_default',1)->first();
-                                                        if($item){
-                                                            $variantPrice += $item->price;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            $isCampaign = false;
-                                            $today = date('Y-m-d H:i:s');
-                                            $campaign = App\Models\CampaignProduct::where(['status' => 1, 'product_id' => $modalProducts->id])->first();
-                                            if($campaign){
-                                                $campaign = $campaign->campaign;
-                                                if($campaign->start_date <= $today &&  $today <= $campaign->end_date){
-                                                    $isCampaign = true;
-                                                }
-                                                $campaignOffer = $campaign->offer;
-                                                $productPrice = $modalProducts->price;
-                                                $campaignOfferPrice = ($campaignOffer / 100) * $productPrice;
-                                                $totalPrice = $modalProducts->price;
-                                                $campaignOfferPrice = $totalPrice - $campaignOfferPrice;
-                                            }
-
-                                            $totalPrice = $modalProducts->price;
-                                            if($modalProducts->offer_price != null){
-                                                $offerPrice = $modalProducts->offer_price;
-                                                $offer = $totalPrice - $offerPrice;
-                                                $percentage = ($offer * 100) / $totalPrice;
-                                                $percentage = round($percentage);
-                                            }
-
-
-                                        @endphp
-
-                                        @if ($isCampaign)
-                                            <h4>{{ $currencySetting->currency_icon }} <span id="mainProductModalPrice-{{ $modalProducts->id }}">{{ sprintf("%.2f", $campaignOfferPrice + $variantPrice) }}</span>  <del>{{ $currencySetting->currency_icon }}{{ sprintf("%.2f", $totalPrice) }}</del></h4>
-                                        @else
-                                            @if ($modalProducts->offer_price == null)
-                                                <h4>{{ $currencySetting->currency_icon }}<span id="mainProductModalPrice-{{ $modalProducts->id }}">{{ sprintf("%.2f", $totalPrice + $variantPrice) }}</span></h4>
-                                            @else
-                                                <h4>{{ $currencySetting->currency_icon }}<span id="mainProductModalPrice-{{ $modalProducts->id }}">{{ sprintf("%.2f", $modalProducts->offer_price + $variantPrice) }}</span> <del>{{ $currencySetting->currency_icon }}{{ sprintf("%.2f", $totalPrice) }}</del></h4>
-                                            @endif
-                                        @endif
-
-                                        @if ($reviewQty > 0)
-                                            <p class="review">
-                                                @for ($i = 1; $i <=5; $i++)
-                                                    @if ($i <= $reviewPoint)
-                                                        <i class="fas fa-star"></i>
-                                                    @elseif ($i> $reviewPoint )
-                                                        @if ($halfReview==true)
-                                                        <i class="fas fa-star-half-alt"></i>
-                                                            @php
-                                                                $halfReview=false
-                                                            @endphp
-                                                        @else
-                                                        <i class="fal fa-star"></i>
-                                                        @endif
-                                                    @endif
-                                                @endfor
-                                                <span>({{ $reviewQty }} {{__('review')}})</span>
-                                            </p>
-                                        @endif
-
-                                        @if ($reviewQty == 0)
-                                            <p class="review">
-                                                <i class="fal fa-star"></i>
-                                                <i class="fal fa-star"></i>
-                                                <i class="fal fa-star"></i>
-                                                <i class="fal fa-star"></i>
-                                                <i class="fal fa-star"></i>
-                                                <span>(0 {{__('review')}})</span>
-                                            </p>
-                                        @endif
-
-                                        @php
-                                            $productPrice = 0;
-                                            if($isCampaign){
-                                                $productPrice = $campaignOfferPrice + $variantPrice;
-                                            }else{
-                                                if ($modalProducts->offer_price == null) {
-                                                    $productPrice = $totalPrice + $variantPrice;
-                                                }else {
-                                                    $productPrice = $modalProducts->offer_price + $variantPrice;
-                                                }
-                                            }
-                                        @endphp
-                                        <form id="productModalFormId-{{ $modalProducts->id }}">
-                                        <div class="wsus__quentity">
-                                            <h5>{{__('quantity') }} :</h5>
-                                            <div class="modal_btn">
-                                                <button onclick="productModalDecrement('{{ $modalProducts->id }}')" type="button" class="btn btn-danger btn-sm">-</button>
-                                                <input id="productModalQty-{{ $modalProducts->id }}" name="quantity"  readonly class="form-control" type="text" min="1" max="100" value="1" />
-                                                <button onclick="productModalIncrement('{{ $modalProducts->id }}')" type="button" class="btn btn-success btn-sm">+</button>
-                                            </div>
-                                            <h3 class="d-none">{{ $currencySetting->currency_icon }}<span id="productModalPrice-{{ $modalProducts->id }}">{{ sprintf("%.2f",$productPrice) }}</span></h3>
-
-                                            <input type="hidden" name="product_id" value="{{ $modalProducts->id }}">
-                                            <input type="hidden" name="image" value="{{ $modalProducts->thumb_image }}">
-                                            <input type="hidden" name="slug" value="{{ $modalProducts->slug }}">
-
-                                        </div>
-                                        @php
-                                            $productVariants = App\Models\ProductVariant::where(['status' => 1, 'product_id'=> $modalProducts->id])->get();
-                                        @endphp
-                                        @if ($productVariants->count() != 0)
-                                            <div class="wsus__selectbox">
-                                                <div class="row">
-                                                    @foreach ($productVariants as $productVariant)
-                                                        @php
-                                                            $items = App\Models\ProductVariantItem::orderBy('is_default','desc')->where(['product_variant_id' => $productVariant->id, 'product_id' => $modalProducts->id])->get();
-                                                        @endphp
-                                                        @if ($items->count() != 0)
-                                                            <div class="col-xl-6 col-sm-6 mb-3">
-                                                                <h5 class="mb-2">{{ $productVariant->name }}:</h5>
-
-                                                                <input type="hidden" name="variants[]" value="{{ $productVariant->id }}">
-                                                                <input type="hidden" name="variantNames[]" value="{{ $productVariant->name }}">
-
-                                                                <select class="select_2 productModalVariant" name="items[]" data-product="{{ $modalProducts->id }}">
-                                                                    @foreach ($items as $item)
-                                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                                                    @endforeach
-                                                                </select>
-
-                                                            </div>
-                                                        @endif
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
-                                        <ul class="wsus__button_area">
-                                            <li><button type="button" onclick="addToCartInProductModal('{{ $modalProducts->id }}')" class="add_cart">{{__('add to cart')}}</button></li>
-                                            <li><a class="buy_now" href="javascript:;" onclick="addToBuyNow('{{ $modalProducts->id }}')">{{__('buy now')}}</a></li>
-                                            <li><a href="javascript:;" onclick="addToWishlist('{{ $modalProducts->id }}')"><i class="fal fa-heart"></i></a></li>
-                                            <li><a href="javascript:;" onclick="addToCompare('{{ $modalProducts->id }}')"><i class="far fa-random"></i></a></li>
-                                        </ul>
-                                    </form>
-                                    @if ($modalProducts->sku)
-                                    <p class="brand_model"><span>{{__('Model')}} :</span> {{ $modalProducts->sku }}</p>
-                                    @endif
-
-                                    <p class="brand_model"><span>{{__('Brand')}} :</span> <a href="{{ route('product',['brand' => $modalProducts->brand->slug]) }}">{{ $modalProducts->brand->name }}</a></p>
-                                    <p class="brand_model"><span>{{__('Category')}} :</span> <a href="{{ route('product',['category' => $modalProducts->category->slug]) }}">{{ $modalProducts->category->name }}</a></p>
-                                    <div class="wsus__pro_det_share d-none">
-                                        <h5>{{__('share')}} :</h5>
-                                        <ul class="d-flex">
-                                            <li><a class="facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ route('product-detail', $modalProducts->slug) }}&t={{ $modalProducts->name }}"><i class="fab fa-facebook-f"></i></a></li>
-                                            <li><a class="twitter" href="https://twitter.com/share?text={{ $modalProducts->name }}&url={{ route('product-detail', $modalProducts->slug) }}"><i class="fab fa-twitter"></i></a></li>
-                                            <li><a class="linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url={{ route('product-detail', $modalProducts->slug) }}&title={{ $modalProducts->name }}"><i class="fab fa-linkedin"></i></a></li>
-                                            <li><a class="pinterest" href="https://www.pinterest.com/pin/create/button/?description={{ $modalProducts->name }}&media=&url={{ route('product-detail', $modalProducts->slug) }}"><i class="fab fa-pinterest-p"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    @endforeach --}}
-    <!--==========================
-      PRODUCT MODAL VIEW END
-    ===========================-->
 
     @yield('public-content')
 
@@ -937,11 +663,7 @@
                         <a class="action" href="mailto:{{ $footer->email }}"><i class="far fa-envelope"></i>
                             {{ $footer->email }}</a>
                         <p><i class="fal fa-map-marker-alt"></i> {{ $footer->address }}</p>
-                        <ul class="wsus__footer_social">
-                            @foreach ($links as $link)
-                            <li><a class="facebook" href="{{ $link->link }}"><i class="{{ $link->icon }}"></i></a></li>
-                            @endforeach
-                        </ul>
+
                     </div>
                 </div>
                 <div class="col-xl-2 col-sm-5 col-md-6 col-lg-2">
@@ -1014,7 +736,6 @@
         $max_val = $shop_page->filter_price_range;
         $currencySetting = App\Models\Setting::first();
         $currency_icon = $currencySetting->currency_icon;
-        $tawk_setting = App\Models\TawkChat::first();
         $cookie_consent = App\Models\CookieConsent::first();
         $setting = App\Models\Setting::first();
 
@@ -1022,23 +743,7 @@
     <script>
         let filter_max_val = "{{ $max_val }}";
         let currency_icon = "{{ $currency_icon }}";
-        let themeColor = "{{ $setting->theme_one }}";
     </script>
-
-    @if ($tawk_setting->status == 1)
-    <script type="text/javascript">
-        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-        (function(){
-            var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-            s1.async=true;
-            s1.src='{{ $tawk_setting->chat_link }}';
-            s1.charset='UTF-8';
-            s1.setAttribute('crossorigin','*');
-            s0.parentNode.insertBefore(s1,s0);
-        })();
-    </script>
-
-    @endif
 
     @if ($cookie_consent->status == 1)
     <script src="{{ asset('user/js/cookieconsent.min.js') }}"></script>
@@ -1128,11 +833,7 @@
                 $("#modalSubscribeForm").on('submit', function(e){
                     e.preventDefault();
 
-                    var isDemo = "{{ env('APP_VERSION') }}"
-                    if(isDemo == 0){
-                        toastr.error('This Is Demo Version. You Can Not Change Anything');
-                        return;
-                    }
+
 
                     $("#modal-subscribe-spinner").removeClass('d-none')
                     $("#modalSubscribeBtn").addClass('after_subscribe')
@@ -1188,11 +889,7 @@
 
                 $("#subscriberForm").on('submit', function(e){
                     e.preventDefault();
-                    var isDemo = "{{ env('APP_VERSION') }}"
-                    if(isDemo == 0){
-                        toastr.error('This Is Demo Version. You Can Not Change Anything');
-                        return;
-                    }
+
 
                     $("#subscribe-spinner").removeClass('d-none')
                     $("#SubscribeBtn").addClass('after_subscribe')
@@ -1240,11 +937,7 @@
 
         function addToWishlist(id){
 
-            var isDemo = "{{ env('APP_VERSION') }}"
-            if(isDemo == 0){
-                toastr.error('This Is Demo Version. You Can Not Change Anything');
-                return;
-            }
+
 
             let isAuth = "{{ $isAuth }}";
             if(!isAuth){

@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\TermsAndCondition;
+use File;
 use Illuminate\Http\Request;
 use Image;
-use File;
+
 class TermsAndConditionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index()
@@ -22,7 +23,7 @@ class TermsAndConditionController extends Controller
             $isTermsCondition = true;
         }
 
-        return response()->json(['termsAndCondition' => $termsAndCondition, 'isTermsCondition' => $isTermsCondition]);
+        return view('admin.terms_and_condition',compact('termsAndCondition','isTermsCondition'));
     }
 
 
@@ -32,7 +33,7 @@ class TermsAndConditionController extends Controller
             'terms_and_condition' => 'required',
         ];
         $customMessages = [
-            'terms_and_condition.required' => trans('Terms and condition is required')
+            'terms_and_condition.required' => trans('admin_validation.Terms and condition is required')
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -41,8 +42,9 @@ class TermsAndConditionController extends Controller
         $termsAndCondition->terms_and_condition = $request->terms_and_condition;
         $termsAndCondition->save();
 
-        $notification = trans('Created Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification = trans('admin_validation.Created Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 
@@ -54,15 +56,16 @@ class TermsAndConditionController extends Controller
             'terms_and_condition' => 'required',
         ];
         $customMessages = [
-            'terms_and_condition.required' => trans('Terms and condition is required')
+            'terms_and_condition.required' => trans('admin_validation.Terms and condition is required')
         ];
         $this->validate($request, $rules,$customMessages);
 
         $termsAndCondition->terms_and_condition = $request->terms_and_condition;
         $termsAndCondition->save();
 
-        $notification = trans('Update Successfully');
-        return response()->json(['message' => $notification], 200);
+        $notification = trans('admin_validation.Update Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 

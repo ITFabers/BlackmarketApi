@@ -323,7 +323,6 @@
                                                                 <label>{{__('Subject')}}</label>
                                                                 <input type="text" name="subject" placeholder="{{__('Type Subject')}}">
                                                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                                <input type="hidden" name="seller_id" value="{{ $product->vendor_id }}">
                                                             </div>
                                                             <div class="wsus__single_input">
                                                                 <label>{{__('Description')}}</label>
@@ -417,16 +416,6 @@
                             </li>
                             @endif
 
-                            @if ($product->vendor_id != 0)
-                            @if ($setting->enable_multivendor == 1)
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill"
-                                    data-bs-target="#pills-contact" type="button" role="tab"
-                                    aria-controls="pills-contact" aria-selected="false">{{__('Seller Information')}}</button>
-                            </li>
-                            @endif
-                            @endif
-
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-contact-tab2" data-bs-toggle="pill"
                                     data-bs-target="#pills-contact2" type="button" role="tab"
@@ -459,92 +448,6 @@
 
                                 </div>
                             </div>
-                            @if ($product->vendor_id != 0)
-                            @php
-                                $user = $product->seller;
-                                $user = $user->user;
-                            @endphp
-                            <div class="tab-pane fade" id="pills-contact" role="tabpanel"
-                                aria-labelledby="pills-contact-tab">
-                                <div class="wsus__pro_det_vendor">
-                                    <div class="row">
-                                        <div class="col-xl-6 col-xxl-5 col-md-6">
-                                            <div class="wsus__vebdor_img">
-                                                @if ($user->image)
-                                                <img src="{{ asset($user->image) }}" alt="vensor" class="img-fluid w-100">
-                                                @else
-                                                <img src="{{ asset($defaultProfile->image) }}" alt="vensor" class="img-fluid w-100">
-                                                @endif
-
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6 col-xxl-7 col-md-6 mt-4 mt-md-0">
-                                            <div class="wsus__pro_det_vendor_text">
-                                                <h4>{{ $user->name }}</h4>
-                                                @php
-                                                    $reviewQty = App\Models\ProductReview::where('status',1)->where('product_vendor_id',$product->vendor_id)->count();
-                                                    $totalReview = App\Models\ProductReview::where('status',1)->where('product_vendor_id',$product->vendor_id)->sum('rating');
-                                                    if ($reviewQty > 0) {
-                                                        $average = $totalReview / $reviewQty;
-                                                        $intAverage = intval($average);
-                                                        $nextValue = $intAverage + 1;
-                                                        $reviewPoint = $intAverage;
-                                                        $halfReview = false;
-                                                        if($intAverage < $average && $average < $nextValue){
-                                                            $reviewPoint= $intAverage + 0.5;
-                                                            $halfReview=true;
-                                                        }
-                                                    }
-                                                @endphp
-
-                                                @if ($reviewQty > 0)
-                                                <p class="rating">
-                                                    @for ($i = 1; $i <=5; $i++)
-                                                        @if ($i <= $reviewPoint)
-                                                            <i class="fas fa-star"></i>
-                                                        @elseif ($i> $reviewPoint )
-                                                            @if ($halfReview==true)
-                                                            <i class="fas fa-star-half-alt"></i>
-                                                                @php
-                                                                    $halfReview=false
-                                                                @endphp
-                                                            @else
-                                                            <i class="fal fa-star"></i>
-                                                            @endif
-                                                        @endif
-                                                    @endfor
-                                                    <span>({{ $reviewQty }} {{ __('user.review') }})</span>
-                                                </p>
-                                                @endif
-
-                                                @if ($reviewQty == 0)
-                                                    <p class="rating">
-                                                        <i class="fal fa-star"></i>
-                                                        <i class="fal fa-star"></i>
-                                                        <i class="fal fa-star"></i>
-                                                        <i class="fal fa-star"></i>
-                                                        <i class="fal fa-star"></i>
-                                                        <span>(0 {{ __('user.review') }})</span>
-                                                    </p>
-                                                @endif
-
-                                                <p><span>{{__('Store Name')}}:</span> {{ $user->seller->shop_name }}</p>
-                                                <p><span>{{__('Address')}}:</span> {{ $user->address }} {{ $user->city ? ','.$user->city->name : '' }} {{ $user->city ? ','.$user->city->countryState->name : '' }} {{ $user->city ? ','.$user->city->countryState->country->name : '' }}</p>
-                                                <p><span>{{__('Phone')}}:</span> {{ $user->phone }}</p>
-                                                <p><span>{{__('mail')}}:</span> {{ $user->email }}</p>
-                                                <a href="{{ route('seller-detail',['shop_name' => $user->seller->slug]) }}" class="see_btn">{{__('visit store')}}</a>
-                                                <a href="{{ route('user.chat-with-seller', $user->seller->slug) }}" class="see_btn">{{__('Chat with Seller')}}</a>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-12">
-                                            <div class="wsus__vendor_details">
-                                                {!! clean($user->seller->description) !!}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
                             <div class="tab-pane fade" id="pills-contact2" role="tabpanel"
                                 aria-labelledby="pills-contact-tab2">
                                 <div class="wsus__pro_det_review">
@@ -598,15 +501,6 @@
 
                                                         <input type="hidden" id="product_id" name="product_id" value="{{ $product->id }}">
                                                         <input type="hidden" name="rating" value="5" id="product_rating">
-                                                        <input type="hidden" name="seller_id" value="{{ $product->vendor_id }}">
-
-                                                        @if($recaptchaSetting->status==1)
-                                                            <div class="col-xl-12">
-                                                                <div class="wsus__single_com mb-3">
-                                                                    <div class="g-recaptcha" data-sitekey="{{ $recaptchaSetting->site_key }}"></div>
-                                                                </div>
-                                                            </div>
-                                                        @endif
 
                                                         @auth
                                                         <button class="common_btn" type="submit">{{__('submit review')}}</button>
@@ -1058,11 +952,7 @@
 
             $("#reportModalForm").on('submit', function(e){
                 e.preventDefault();
-                var isDemo = "{{ env('APP_VERSION') }}"
-                if(isDemo == 0){
-                    toastr.error('This Is Demo Version. You Can Not Change Anything');
-                    return;
-                }
+
                 $.ajax({
                     type: 'post',
                     data: $('#reportModalForm').serialize(),
@@ -1157,11 +1047,7 @@
             $("#reviewFormId").on('submit', function(e){
                 e.preventDefault();
 
-                var isDemo = "{{ env('APP_VERSION') }}"
-                if(isDemo == 0){
-                    toastr.error('This Is Demo Version. You Can Not Change Anything');
-                    return;
-                }
+
                 $.ajax({
                     type: 'post',
                     data: $('#reviewFormId').serialize(),
@@ -1179,9 +1065,7 @@
                     error: function(response) {
                         if(response.responseJSON.errors.rating)toastr.error(response.responseJSON.errors.rating[0])
                         if(response.responseJSON.errors.review)toastr.error(response.responseJSON.errors.review[0])
-                        if(!response.responseJSON.errors.rating || !response.responseJSON.errors.review){
-                            toastr.error("{{__('Please complete the recaptcha to submit the form')}}")
-                        }
+
                     }
                 });
             })

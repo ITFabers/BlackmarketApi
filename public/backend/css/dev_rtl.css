@@ -25,11 +25,6 @@ div.dataTables_wrapper div.dataTables_filter input {
     margin-left: -0.5em !important;
 }
 
-.seller_chat_list .media span {
-	left: auto !important;
-	right: -30px !important;
-}
-
 .modal-header .close {
     left: 0;
     position: absolute;

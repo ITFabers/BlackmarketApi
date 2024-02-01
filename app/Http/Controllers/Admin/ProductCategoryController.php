@@ -3,36 +3,38 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Category;
-use App\Models\PopularCategory;
-use App\Models\ThreeColumnCategory;
-use App\Models\MegaMenuSubCategory;
 use App\Models\MegaMenuCategory;
-use Illuminate\Http\Request;
-use  Image;
+use App\Models\MegaMenuSubCategory;
+use App\Models\Notification;
 use File;
+use Illuminate\Http\Request;
+use Image;
 use Str;
+
 class ProductCategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
     public function index()
     {
-        $categories=Category::with('subCategories','products')->get();
-        $pupoularCategory = PopularCategory::first();
-        $threeColCategory = ThreeColumnCategory::first();
+        $categories = Category::get();
 
-        return response()->json(['categories' => $categories, 'pupoularCategory' => $pupoularCategory, 'threeColCategory' => $threeColCategory], 200);
+
+        return view('admin.product_category',compact('categories'));
 
     }
 
 
     public function create()
     {
-        return view('admin.create_product_category');
+        $categories = Category::get();
+
+        return view('admin.create_product_category',compact('categories'));
     }
 
 
@@ -41,15 +43,14 @@ class ProductCategoryController extends Controller
         $rules = [
             'name'=>'required|unique:categories',
             'slug'=>'required|unique:categories',
-            'status'=>'required',
             'icon'=>'required',
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'name.unique' => trans('Name already exist'),
-            'slug.required' => trans('Slug is required'),
-            'slug.unique' => trans('Slug already exist'),
-            'icon.required' => trans('Icon is required'),
+            'name.required' => trans('admin_validation.Name is required'),
+            'name.unique' => trans('admin_validation.Name already exist'),
+            'slug.required' => trans('admin_validation.Slug is required'),
+            'slug.unique' => trans('admin_validation.Slug already exist'),
+            'icon.required' => trans('admin_validation.Icon is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -57,12 +58,33 @@ class ProductCategoryController extends Controller
 
         $category->name = $request->name;
         $category->slug = $request->slug;
-        $category->status = $request->status;
+        $category->status = $request->status??0;
         $category->icon = $request->icon;
+        $category->parent_id = $request->parent_id??0;
         $category->save();
 
-        $notification = trans('Created Successfully');
-        return response()->json(['message' => $notification],200);
+        if($request->image){
+            $extention = $request->image->getClientOriginalExtension();
+            $logo_name = Str::slug($request->name).date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
+            $logo_name = 'uploads/custom-images/'.$logo_name;
+            Image::make($request->image)
+                ->save(public_path().'/'.$logo_name);
+            $category->image=$logo_name;
+            $category->save();
+        }
+        $adminsWithType1 = Admin::where('admin_type', 1)->get();
+
+        foreach ($adminsWithType1 as $admin) {
+            $notification = new Notification([
+                'admin_id' => $admin->id,
+                'message' => 'Created new category'.' '.$category->name,
+                'link' => '',
+            ]);
+            $notification->save();
+        }
+        $notification = trans('admin_validation.Created Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.product-category.index')->with($notification);
     }
 
 
@@ -74,7 +96,8 @@ class ProductCategoryController extends Controller
     public function edit($id)
     {
         $category = Category::find($id);
-        return view('admin.edit_product_category',compact('category'));
+        $categories = Category::get();
+        return view('admin.edit_product_category',compact('category','categories'));
     }
 
 
@@ -84,32 +107,49 @@ class ProductCategoryController extends Controller
         $rules = [
             'name'=>'required|unique:categories,name,'.$category->id,
             'slug'=>'required|unique:categories,name,'.$category->id,
-            'status'=>'required',
             'icon'=>'required'
         ];
 
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'name.unique' => trans('Name already exist'),
-            'slug.required' => trans('Slug is required'),
-            'slug.unique' => trans('Slug already exist'),
-            'icon.required' => trans('Icon is required'),
+            'name.required' => trans('admin_validation.Name is required'),
+            'name.unique' => trans('admin_validation.Name already exist'),
+            'slug.required' => trans('admin_validation.Slug is required'),
+            'slug.unique' => trans('admin_validation.Slug already exist'),
+            'icon.required' => trans('admin_validation.Icon is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
         $category->icon = $request->icon;
         $category->name = $request->name;
         $category->slug = $request->slug;
-        $category->status = $request->status;
+        $category->status = $request->status??0;
+        $category->parent_id = $request->parent_id??0;
         $category->save();
 
-        $notification = trans('Update Successfully');
-        return response()->json(['message' => $notification],200);
+        if($request->image){
+            $old_logo = $category->image;
+            $extention = $request->image->getClientOriginalExtension();
+            $logo_name = Str::slug($request->name).date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
+            $logo_name = 'uploads/custom-images/'.$logo_name;
+            Image::make($request->image)
+                ->save(public_path().'/'.$logo_name);
+            $category->image=$logo_name;
+            $category->save();
+
+            if($old_logo){
+                if(File::exists(public_path().'/'.$old_logo))unlink(public_path().'/'.$old_logo);
+            }
+        }
+
+        $notification = trans('admin_validation.Update Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.product-category.index')->with($notification);
     }
 
     public function destroy($id)
     {
         $category = Category::find($id);
+        $old_logo = $category->image;
         $category->delete();
         $megaMenuCategory = MegaMenuCategory::where('category_id',$id)->first();
         if($megaMenuCategory){
@@ -118,8 +158,13 @@ class ProductCategoryController extends Controller
             MegaMenuSubCategory::where('mega_menu_category_id',$cat_id)->delete();
         }
 
-        $notification = trans('Delete Successfully');
-        return response()->json(['message' => $notification],200);
+        if($old_logo){
+            if(File::exists(public_path().'/'.$old_logo))unlink(public_path().'/'.$old_logo);
+        }
+
+        $notification = trans('admin_validation.Delete Successfully');
+        $notification = array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->route('admin.product-category.index')->with($notification);
     }
 
     public function changeStatus($id){
@@ -127,12 +172,13 @@ class ProductCategoryController extends Controller
         if($category->status==1){
             $category->status=0;
             $category->save();
-            $message = trans('Inactive Successfully');
+            $message = trans('admin_validation.Inactive Successfully');
         }else{
             $category->status=1;
             $category->save();
-            $message= trans('Active Successfully');
+            $message= trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }
+
 }

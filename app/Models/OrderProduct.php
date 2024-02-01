@@ -9,9 +9,7 @@ class OrderProduct extends Model
 {
     use HasFactory;
 
-    public function seller(){
-        return $this->belongsTo(Vendor::class,'seller_id');
-    }
+
 
     public function orderProductVariants(){
         return $this->hasMany(OrderProductVariant::class);

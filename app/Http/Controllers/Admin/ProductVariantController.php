@@ -4,26 +4,26 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProductVariant;
-use Illuminate\Http\Request;
-use App\Models\Product;
 use App\Models\ProductVariantItem;
 use App\Models\ShoppingCartVariant;
+use Illuminate\Http\Request;
+
 class ProductVariantController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin-api');
+        $this->middleware('auth:admin');
     }
 
-    public function index($productId)
+    public function index()
     {
-        $product = Product::find($productId);
-        if($product){
-            $variants = ProductVariant::with('variantItems')->where('product_id',$productId)->get();
-            return response()->json(['variants' => $variants, 'product' => $product], 200);
+        $variants = ProductVariant::with('variantItems')->get();
+        if($variants){
+            return view('admin.variant',compact('variants'));
         }else{
-            $notification = trans('Something went wrong');
-            return response()->json(['message' => $notification],400);
+            $notification = trans('admin_validation.Something went wrong');
+            $notification=array('messege'=>$notification,'alert-type'=>'error');
+            return redirect()->route('admin.product.index')->with($notification);
         }
 
     }
@@ -33,29 +33,21 @@ class ProductVariantController extends Controller
     {
         $rules = [
             'name' => 'required',
-            'product_id' => 'required',
             'status' => 'required'
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'product_id.required' => trans('Product is required'),
+            'name.required' => trans('admin_validation.Name is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
-        $product = Product::find($request->product_id)->first();
-        if($product){
-            $variant = new ProductVariant();
-            $variant->name = $request->name;
-            $variant->product_id = $request->product_id;
-            $variant->status = $request->status;
-            $variant->save();
+        $variant = new ProductVariant();
+        $variant->name = $request->name;
+        $variant->status = $request->status;
+        $variant->save();
 
-            $notification = trans('Created Successfully');
-            return response()->json(['message' => $notification],200);
-        }else{
-            $notification = trans('Something went wrong');
-            return response()->json(['message' => $notification],400);
-        }
+        $notification = trans('admin_validation.Created Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
 
     }
 
@@ -63,12 +55,10 @@ class ProductVariantController extends Controller
 
         $rules = [
             'name' => 'required',
-            'product_id' => 'required',
             'status' => 'required'
         ];
         $customMessages = [
-            'name.required' => trans('Name is required'),
-            'product_id.required' => trans('Product is required'),
+            'name.required' => trans('admin_validation.Name is required'),
         ];
         $this->validate($request, $rules,$customMessages);
 
@@ -79,8 +69,9 @@ class ProductVariantController extends Controller
 
         ProductVariantItem::where('product_variant_id',$variant->id)->update(['product_variant_name' => $variant->name]);
 
-        $notification = trans('Update Successfully');
-        return response()->json(['message' => $notification],200);
+        $notification = trans('admin_validation.Update Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
 
@@ -91,8 +82,9 @@ class ProductVariantController extends Controller
 
         ShoppingCartVariant::where('variant_id', $id)->delete();
 
-        $notification = trans('Delete Successfully');
-        return response()->json(['message' => $notification],200);
+        $notification = trans('admin_validation.Delete Successfully');
+        $notification=array('messege'=>$notification,'alert-type'=>'success');
+        return redirect()->back()->with($notification);
     }
 
     public function changeStatus($id){
@@ -100,11 +92,11 @@ class ProductVariantController extends Controller
         if($variant->status == 1){
             $variant->status = 0;
             $variant->save();
-            $message = trans('Inactive Successfully');
+            $message = trans('admin_validation.Inactive Successfully');
         }else{
             $variant->status = 1;
             $variant->save();
-            $message = trans('Active Successfully');
+            $message = trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
     }

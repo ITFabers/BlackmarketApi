@@ -64,10 +64,9 @@
 
                                         @php
                                             $existOrder = $orders->where('user_id',13)->count();
-                                            $isSeller = $customer->seller;
                                         @endphp
 
-                                        @if ($existOrder == 0 && !$isSeller)
+                                        @if ($existOrder == 0)
                                             <a href="javascript:;" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger btn-sm" onclick="deleteData({{ $customer->id }})"><i class="fa fa-trash" aria-hidden="true"></i></a>
                                         @else
                                             <a href="javascript:;" data-toggle="modal" data-target="#canNotDeleteModal" class="btn btn-danger btn-sm" disabled><i class="fa fa-trash" aria-hidden="true"></i></a>
@@ -145,7 +144,7 @@
         $("#deleteForm").attr("action",'{{ url("admin/customer-delete/") }}'+"/"+id)
     }
     function manageCustomerStatus(id){
-        var isDemo = "{{ env('APP_VERSION') }}"
+        var isDemo = 1
         if(isDemo == 0){
             toastr.error('This Is Demo Version. You Can Not Change Anything');
             return;

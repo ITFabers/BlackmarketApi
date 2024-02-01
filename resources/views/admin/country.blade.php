@@ -75,7 +75,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                       <div class="modal-body">
-                          {{__('admin.You can not delete this country. Because there are one or more states, cities, users and seller has been created in this country.')}}
+                          {{__('admin.You can not delete this country. Because there are one or more states, cities, users has been created in this country.')}}
                       </div>
 
                 <div class="modal-footer">
@@ -90,7 +90,7 @@
         $("#deleteForm").attr("action",'{{ url("admin/country/") }}'+"/"+id)
     }
     function changeCountryStatus(id){
-        var isDemo = "{{ env('APP_VERSION') }}"
+        var isDemo = 1
         if(isDemo == 0){
             toastr.error('This Is Demo Version. You Can Not Change Anything');
             return;

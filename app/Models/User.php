@@ -48,16 +48,8 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    public function seller(){
-        return $this->hasOne(Vendor::class);
-    }
-
     public function city(){
         return $this->belongsTo(City::class);
-    }
-
-    public function state(){
-        return $this->belongsTo(CountryState::class);
     }
 
     public function country(){

@@ -51,14 +51,6 @@
                                     <input type="email" placeholder="{{__('Email')}}" name="email">
                                 </div>
 
-                                @if($recaptchaSetting->status==1)
-                                    <div class="col-xl-12">
-                                        <div class="wsus__single_com mb-3">
-                                            <div class="g-recaptcha" data-sitekey="{{ $recaptchaSetting->site_key }}"></div>
-                                        </div>
-                                    </div>
-                                @endif
-
                                 <button class="common_btn" type="submit">{{ ('Send Email') }}</button>
                             </form>
                         </div>
