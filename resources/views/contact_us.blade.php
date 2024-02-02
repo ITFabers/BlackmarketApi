@@ -1,10 +1,4 @@
 @extends('layout')
-@section('title')
-    <title>{{ $seoSetting->seo_title }}</title>
-@endsection
-@section('meta')
-    <meta name="description" content="{{ $seoSetting->seo_description }}">
-@endsection
 
 @section('public-content')
     <!--============================

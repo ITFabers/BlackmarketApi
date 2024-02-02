@@ -21,8 +21,4 @@ class Order extends Model
     public function orderAddress(){
         return $this->hasOne(OrderAddress::class);
     }
-
-    public function deliveryman(){
-        return $this->belongsTo(DeliveryMan::class, 'delivery_man_id', 'id');
-    }
 }

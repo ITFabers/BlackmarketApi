@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\WEB\Admin\File;
+use File;
 use App\Models\Admin;
-use App\Models\BannerImage;
 use Auth;
 use Hash;
 use Illuminate\Http\Request;
@@ -19,8 +18,7 @@ class AdminUsersController extends Controller
 
     public function index(){
         $admins = Admin::orderBy('id','asc')->get();
-        $defaultProfile = BannerImage::whereId('15')->first();
-        return view('admin.admin', compact('admins','defaultProfile'));
+        return view('admin.admin', compact('admins'));
 
     }
 

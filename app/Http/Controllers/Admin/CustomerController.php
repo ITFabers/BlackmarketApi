@@ -5,11 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\MailHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
-use App\Models\BannerImage;
-use App\Models\BillingAddress;
 use App\Models\Order;
-use App\Models\ProductReport;
-use App\Models\ProductReview;
 use App\Models\User;
 use App\Models\Wishlist;
 use File;
@@ -26,27 +22,23 @@ class CustomerController extends Controller
 
     public function index(){
         $customers = User::with('city','state', 'country')->orderBy('id','desc')->where('status',1)->get();
-        $defaultProfile = BannerImage::whereId('15')->first();
         $orders = Order::all();
 
-        return view('admin.customer', compact('customers','defaultProfile','orders'));
+        return view('admin.customer', compact('customers','orders'));
     }
 
     public function pendingCustomerList(){
         $customers = User::with('city','state', 'country')->orderBy('id','desc')->where('status',0)->get();
-        $defaultProfile = BannerImage::whereId('15')->first();
         $orders = Order::all();
 
-        return view('admin.customer', compact('customers','defaultProfile','orders'));
+        return view('admin.customer', compact('customers','orders'));
 
     }
 
     public function show($id){
         $customer = User::with('city','state', 'country')->find($id);
         if($customer){
-            $defaultProfile = BannerImage::whereId('15')->first();
-
-            return view('admin.show_customer',compact('customer','defaultProfile'));
+            return view('admin.show_customer',compact('customer'));
 
         }else{
             $notification= trans('admin_validation.Something Went Wrong');
@@ -64,8 +56,6 @@ class CustomerController extends Controller
         if($user_image){
             if(File::exists(public_path().'/'.$user_image))unlink(public_path().'/'.$user_image);
         }
-        ProductReport::where('user_id',$id)->delete();
-        ProductReview::where('user_id',$id)->delete();
         Address::where('user_id',$id)->delete();
         Wishlist::where('user_id',$id)->delete();
 

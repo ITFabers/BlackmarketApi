@@ -62,7 +62,6 @@ class AdminLoginController extends Controller
       }
     }
     public function storeLogin(Request $request){
-
         $rules = [
             'email'=>'required',
             'password'=>'required',

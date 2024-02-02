@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CookieConsent;
-use App\Models\Currency;
 use App\Models\Setting;
 use Artisan;
 use File;
@@ -21,9 +19,7 @@ class SettingController extends Controller
 
     public function index(){
         $setting = Setting::first();
-        $cookieConsent = CookieConsent::first();
-        $currencies = Currency::orderBy('name','asc')->get();
-        return view('admin.setting',compact('setting','cookieConsent','currencies'));
+        return view('admin.setting',compact('setting'));
     }
 
     public function updateLogoFavicon(Request $request){

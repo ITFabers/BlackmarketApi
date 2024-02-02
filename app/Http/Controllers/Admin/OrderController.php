@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\DeliveryMan;
 use App\Models\Order;
 use App\Models\OrderAddress;
 use App\Models\OrderProduct;
@@ -74,9 +73,8 @@ class OrderController extends Controller
 
     public function show($id){
         $order = Order::with('user','orderProducts.orderProductVariants','orderAddress')->find($id);
-        $deliverymans=DeliveryMan::latest()->get();
         $setting = Setting::first();
-        return view('admin.show_order',compact('order', 'deliverymans', 'setting'));
+        return view('admin.show_order',compact('order', 'setting'));
     }
 
     public function updateOrderStatus(Request $request , $id){
@@ -114,17 +112,6 @@ class OrderController extends Controller
         }elseif($request->payment_status == 1){
             $order->payment_status = 1;
             $order->payment_approval_date = date('Y-m-d');
-            $order->save();
-        }
-
-        if($request->delivery_man_id == 0){
-            $order->delivery_man_id = 0;
-            $order->order_request = 0;
-            $order->save();
-        }else if($request->delivery_man_id > 0){
-            $order->delivery_man_id = $request->delivery_man_id;
-            $order->order_request = 0;
-            $order->order_req_date = date('Y-m-d');
             $order->save();
         }
 

@@ -39,19 +39,6 @@
                                     <tr>
                                         <td>{{ ++$index }}</td>
                                         <td>{{ $city->name }}</td>
-                                        <td>{{ $city->countryState->name }}</td>
-                                        <td>{{ $city->countryState->country->name }}</td>
-                                        <td>
-                                            @if($city->status == 1)
-                                                <a href="javascript:;" onclick="changeStateStatus({{ $city->id }})">
-                                                    <input id="status_toggle" type="checkbox" checked data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
-                                                </a>
-                                                @else
-                                                <a href="javascript:;" onclick="changeStateStatus({{ $city->id }})">
-                                                    <input id="status_toggle" type="checkbox" data-toggle="toggle" data-on="{{__('admin.Active')}}" data-off="{{__('admin.InActive')}}" data-onstyle="success" data-offstyle="danger">
-                                                </a>
-                                                @endif
-                                        </td>
                                         <td>
                                             <a href="{{ route('admin.city.edit',$city->id) }}" class="btn btn-primary btn-sm"><i class="fa fa-edit" aria-hidden="true"></i></a>
 

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use App\Models\BannerImage;
 use App\Models\User;
 use Auth;
 use Hash;
@@ -31,8 +30,7 @@ class LoginController extends Controller
     }
 
     public function loginPage(){
-        $background = BannerImage::whereId('13')->first();
-        return view('login', compact('background'));
+        return view('login');
     }
 
     public function storeLogin(Request $request){
@@ -152,12 +150,6 @@ class LoginController extends Controller
             $message = $template->description;
             $message = str_replace('{{name}}',$user->name,$message);
             Mail::to($user->email)->send(new UserForgetPassword($message,$subject,$user));
-
-            $template=SmsTemplate::where('id',2)->first();
-            $message=$template->description;
-            $message = str_replace('{{name}}',$user->name,$message);
-            $message = str_replace('{{otp_code}}', $user->forget_password_token ,$message);
-
             $notification = trans('user_validation.Reset password link send to your email.');
             return response()->json(['notification' => $notification],200);
 

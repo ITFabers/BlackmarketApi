@@ -10,19 +10,12 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $appends = ['averageRating','totalSold'];
-
-    public function getAverageRatingAttribute()
-    {
-        return $this->avgReview()->avg('rating') ? : '0';
-    }
+    protected $appends = ['totalSold'];
 
     public function getTotalSoldAttribute()
     {
         return $this->orderProducts()->sum('qty');
     }
-
-
 
     public function brand(){
         return $this->belongsTo(Brand::class);

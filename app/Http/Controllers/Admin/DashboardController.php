@@ -8,8 +8,6 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\ProductReport;
-use App\Models\ProductReview;
 use App\Models\Setting;
 use App\Models\Subscriber;
 use App\Models\User;
@@ -52,8 +50,6 @@ class DashboardController extends Controller
 
         $setting = Setting::first();
         $products = Product::all();
-        $reviews = ProductReview::all();
-        $reports = ProductReport::all();
         $users = User::all();
         $subscribers = Subscriber::where('is_verified',1)->get();
         $blogs = Blog::all();
@@ -82,8 +78,6 @@ class DashboardController extends Controller
             'totalProductSale' => $totalProductSale,
             'setting' => $setting,
             'totalProduct' => $products->count(),
-            'reviews' => $reviews->count(),
-            'reports' => $reports->count(),
             'users' => $users->count(),
             'subscribers' => $subscribers->count(),
             'blogs' => $blogs->count(),

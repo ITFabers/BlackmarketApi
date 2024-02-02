@@ -49,13 +49,6 @@
         var end_year = '';
         var end_month = '';
         var end_date = '';
-        var capmaign_time = '';
-        var campaign_end_year = ''
-        var campaign_end_month = ''
-        var campaign_end_date = ''
-        var campaign_hour = ''
-        var campaign_min = ''
-        var campaign_sec = ''
         var productIds = [];
         var productYears = [];
         var productMonths = [];
@@ -104,7 +97,6 @@
 
           <li><a href="{{ route('home') }}"><i class="fal fa fa-globe"></i> {{__('Go to Homepage')}}</a></li>
           <li><a class="{{ Route::is('user.order') || Route::is('user.order-show') ? 'active' : '' }}" href="{{ route('user.order') }}"><i class="fas fa-list-ul"></i> {{__('Orders')}}</a></li>
-          <li><a class="{{ Route::is('user.review') ? 'active' : '' }}" href="{{ route('user.review') }}"><i class="far fa-star"></i> {{__('Reviews')}}</a></li>
           <li><a class="{{ Route::is('user.wishlist') ? 'active' : '' }}" href="{{ route('user.wishlist') }}"><i class="far fa-heart"></i> {{__('Wishlist')}}</a></li>
           <li><a class="{{ Route::is('user.my-profile') ? 'active' : '' }}" href="{{ route('user.my-profile') }}"><i class="far fa-user"></i> {{__('My Profile')}}</a></li>
           <li><a class="{{ Route::is('user.address') ? 'active' : '' }}" href="{{ route('user.address') }}"><i class="fal fa-gift-card"></i> {{__('Address')}}</a></li>

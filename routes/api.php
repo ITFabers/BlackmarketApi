@@ -13,13 +13,6 @@ use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
-
-// new routes
-
-
-//old routes
-
-
 //new routes
 Route::group(['middleware' => ['XSS']], function () {
 	Route::get('/main', [StaticController::class, 'index'])->name('index');
@@ -73,7 +66,6 @@ Route::group([], function () {
     Route::post('/send-contact-message', [HomeController::class, 'sendContactMessage'])->name('send-contact-message');
     Route::get('/blog', [HomeController::class, 'blog'])->name('blog');
     Route::get('/blog/{slug}', [HomeController::class, 'blogDetail'])->name('blog-detail');
-    Route::post('/blog-comment', [HomeController::class, 'blogComment'])->name('blog-comment');
     Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
     Route::get('/terms-and-conditions', [HomeController::class, 'termsAndCondition'])->name('terms-and-conditions');
     Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
@@ -95,8 +87,6 @@ Route::group([], function () {
         Route::get('complete-order', [UserProfileController::class, 'completeOrder'])->name('complete-order');
         Route::get('declined-order', [UserProfileController::class, 'declinedOrder'])->name('declined-order');
         Route::get('order-show/{id}', [UserProfileController::class, 'orderShow'])->name('order-show');
-        Route::get('review', [UserProfileController::class, 'review'])->name('review');
-        Route::get('get-review/{id}', [UserProfileController::class, 'showReview'])->name('show-review');
         Route::get('my-profile', [UserProfileController::class, 'myProfile'])->name('my-profile');
         Route::post('update-profile', [UserProfileController::class, 'updateProfile'])->name('update-profile');
         // Route::get('address', [UserProfileController::class, 'address'])->name('address');
@@ -106,9 +96,6 @@ Route::group([], function () {
         Route::get('add-to-wishlist/{id}', [UserProfileController::class, 'addToWishlist'])->name('add-to-wishlist');
         Route::get('remove-wishlist/{id}', [UserProfileController::class, 'removeWishlist'])->name('remove-wishlist');
         Route::get('clear-wishlist', [UserProfileController::class, 'clearWishlist'])->name('clear-wishlist');
-        Route::post('product-report', [UserProfileController::class, 'storeProductReport'])->name('product-report');
-
-        Route::post('update-review/{id}', [UserProfileController::class, 'updateReview'])->name('update-review');
 
         Route::delete('remove-account', [UserProfileController::class, 'remove_account'])->name('remove-account');
         Route::group(['as'=> 'checkout.', 'prefix' => 'checkout'],function (){

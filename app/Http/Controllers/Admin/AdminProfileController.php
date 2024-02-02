@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\BannerImage;
 use Auth;
 use File;
 use Hash;
@@ -21,8 +20,7 @@ class AdminProfileController extends Controller
 
     public function index(){
         $admin=Auth::guard('admin')->user();
-        $defaultProfile = BannerImage::whereId('15')->first();
-        return view('admin.admin_profile',compact('admin','defaultProfile'));
+        return view('admin.admin_profile',compact('admin'));
     }
 
     public function update(Request $request){

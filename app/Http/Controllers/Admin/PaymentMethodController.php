@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BankPayment;
-use App\Models\Currency;
-use App\Models\CurrencyCountry;
 use App\Models\Setting;
 use File;
 use Illuminate\Http\Request;
@@ -21,11 +19,9 @@ class PaymentMethodController extends Controller
     public function index(){
         $bank = BankPayment::first();
 
-        $countires = CurrencyCountry::orderBy('name','asc')->get();
-        $currencies = Currency::orderBy('name','asc')->get();
         $setting = Setting::first();
 
-        return view('admin.payment_method', compact('bank','countires','currencies','setting'));
+        return view('admin.payment_method', compact('bank','setting'));
     }
 
     public function updateCashOnDelivery(Request $request){

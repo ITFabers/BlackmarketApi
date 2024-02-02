@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\BlogCategory;
-use App\Models\BlogComment;
-use App\Models\PopularPost;
 use App\Models\Setting;
 use Auth;
 use File;
@@ -22,7 +20,7 @@ class BlogController extends Controller
 
     public function index()
     {
-        $blogs = Blog::with('category','comments')->get();
+        $blogs = Blog::with('category')->get();
         $setting = Setting::first();
         $frontend_url = $setting->frontend_url;
         $frontend_url = $frontend_url.'/blogs/blog?slug=';
@@ -98,7 +96,7 @@ class BlogController extends Controller
 
     public function show($id)
     {
-        $blog = Blog::with('category','comments')->find($id);
+        $blog = Blog::with('category')->find($id);
         return response()->json(['blog' => $blog], 200);
     }
 
@@ -162,9 +160,6 @@ class BlogController extends Controller
         if($old_image){
             if(File::exists(public_path().'/'.$old_image))unlink(public_path().'/'.$old_image);
         }
-
-        BlogComment::where('blog_id',$id)->delete();
-        PopularPost::where('blog_id',$id)->delete();
 
         $notification=  trans('admin_validation.Delete Successfully');
         $notification = array('messege'=>$notification,'alert-type'=>'success');

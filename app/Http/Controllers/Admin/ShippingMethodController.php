@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\ShippingExport;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\WEB\Admin\ShippingMethod;
-use App\Imports\ShippingImport;
 use App\Models\City;
 use App\Models\Setting;
 use App\Models\Shipping;
@@ -79,9 +76,8 @@ class ShippingMethodController extends Controller
 
 
     public function edit($id){
-        $shipping = ShippingMethod::find($id);
         $setting = Setting::first();
-        return view('admin.edit_shipping', compact('shipping','setting'));
+        return view('admin.edit_shipping', compact('setting'));
     }
 
 
@@ -124,41 +120,5 @@ class ShippingMethodController extends Controller
         $notification=trans('admin_validation.Delete Successfully');
         $notification=array('messege'=>$notification,'alert-type'=>'success');
         return redirect()->route('admin.shipping.index')->with($notification);
-    }
-
-
-    public function shipping_import_page()
-    {
-        return view('admin.shipping_import_page');
-    }
-
-    public function shipping_export()
-    {
-        $is_dummy = false;
-        return Excel::download(new ShippingExport($is_dummy), 'shipping-rules.xlsx');
-    }
-
-    public function demo_shipping_export()
-    {
-        $is_dummy = true;
-        return Excel::download(new ShippingExport($is_dummy), 'shipping-rules.xlsx');
-    }
-
-
-
-    public function shipping_import(Request $request)
-    {
-        try{
-            Excel::import(new ShippingImport, $request->file('import_file'));
-
-            $notification=trans('Uploaded Successfully');
-            $notification=array('messege'=>$notification,'alert-type'=>'success');
-            return redirect()->back()->with($notification);
-        }catch(Exception $ex){
-            $notification=trans('Please follow the instruction and input the value carefully');
-            $notification=array('messege'=>$notification,'alert-type'=>'error');
-            return redirect()->back()->with($notification);
-        }
-
     }
 }

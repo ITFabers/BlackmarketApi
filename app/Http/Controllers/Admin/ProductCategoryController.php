@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Category;
-use App\Models\MegaMenuCategory;
-use App\Models\MegaMenuSubCategory;
 use App\Models\Notification;
 use File;
 use Illuminate\Http\Request;
@@ -151,12 +149,6 @@ class ProductCategoryController extends Controller
         $category = Category::find($id);
         $old_logo = $category->image;
         $category->delete();
-        $megaMenuCategory = MegaMenuCategory::where('category_id',$id)->first();
-        if($megaMenuCategory){
-            $cat_id = $megaMenuCategory->id;
-            $megaMenuCategory->delete();
-            MegaMenuSubCategory::where('mega_menu_category_id',$cat_id)->delete();
-        }
 
         if($old_logo){
             if(File::exists(public_path().'/'.$old_logo))unlink(public_path().'/'.$old_logo);

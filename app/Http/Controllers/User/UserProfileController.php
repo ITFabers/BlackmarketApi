@@ -5,14 +5,12 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
-use App\Models\Country;
 use App\Models\City;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Product;
 use App\Models\OrderProduct;
 use App\Models\Wishlist;
-use App\Models\BannerImage;
 use App\Models\User;
 use Image;
 use File;
@@ -136,12 +134,10 @@ class UserProfileController extends Controller
         $user = Auth::guard('api')->user();
         $personInfo = User::select('id','name','email','phone','image','city_id','zip_code','address')->find($user->id);
         $cities = City::orderBy('name','asc')->where(['status' => 1])->get();
-        $defaultProfile = BannerImage::select('id','image')->whereId('15')->first();
 
         return response()->json([
             'personInfo' => $personInfo,
-            'cities' => $cities,
-            'defaultProfile' => $defaultProfile
+            'cities' => $cities
         ]);
     }
 

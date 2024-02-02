@@ -3,105 +3,44 @@
 
 namespace App\Http\Controllers;
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-
 use Illuminate\Http\Request;
-
 use App\Models\Brand;
-
 use App\Models\Slider;
-
-use App\Models\Partner;
-
 use App\Models\Category;
-
-use App\Models\SubCategory;
-
-use App\Models\ChildCategory;
-
 use App\Models\Product;
-
-use App\Models\BannerImage;
-
-use App\Models\Service;
-
 use App\Models\Blog;
-
-use App\Models\ContactPage;
-
 use App\Models\BlogCategory;
-
 use App\Models\Faq;
-
 use App\Models\TermsAndCondition;
-
-
 use App\Models\Subscriber;
-
 use App\Mail\SubscriptionVerification;
-
 use App\Mail\ContactMessageInformation;
-
 use App\Helpers\MailHelper;
-
 use App\Models\EmailTemplate;
-
 use App\Models\ProductSpecification;
-
 use App\Models\ProductGallery;
-
 use App\Models\Setting;
-
 use App\Models\ContactMessage;
-
-use App\Models\BlogComment;
-
 use App\Models\ProductVariant;
-
 use App\Models\ProductVariantItem;
-
 use App\Models\Order;
-
 use App\Models\Wishlist;
-
-use App\Models\ShopPage;
-
-use App\Models\SeoSetting;
-
 use Mail;
-
 use Str;
-
 use Session;
-
 use Cart;
-
 use Carbon\Carbon;
-
 use Route;
-
 use Auth;
-
 use App\Models\FooterSocialLink;
-
 use App\Models\FooterLink;
-
 use App\Models\Footer;
-
 use App\Http\Resources\SliderResource;
 use App\Repositories\SliderRepository;
-
 use App\Repositories\CategoryRepository;
 use App\Http\Resources\CategoryResource;
-
 use App\Http\Resources\ProductsResource;
 use App\Repositories\ProductsRepository;
-
-
-
 class HomeController extends Controller
 /**
  * @OA\Get(
@@ -167,27 +106,16 @@ class HomeController extends Controller
     }
 
     public function homepage(){
-
         $product = Product::where(['show_homepage' => 1,'status' => 1])->get();
-
         return response()->json(['product'=> $product]);
-
     }
 
     public function websiteSetup(){
-
         $language = include(resource_path('lang/en/user.php'));
-
         $setting = Setting::select('logo','favicon','phone_number_required','default_phone_code','currency_icon','currency_name')->first();
-
-        $seo_setting = SeoSetting::all();
-
         return response()->json([
-
             'language' => $language,
-            'setting' => $setting,
-            'seo_setting' => $seo_setting,
-
+            'setting' => $setting
         ]);
     }
 
@@ -197,10 +125,8 @@ class HomeController extends Controller
         if ($currentDepth > $maxDepth) {
             return null;
         }
-
         // Fetch subcategories for the current category
         $subcategories = Category::where(['parent_id' => $category->id, 'status' => 1])->get();
-
         // Initialize an array to store the category data
         $categoryData = [
             'id' => $category->id,
@@ -229,157 +155,66 @@ class HomeController extends Controller
     public function wishlist(){
         $user = Auth::guard('api')->user();
         $wishlists = Wishlist::with('product')->where(['user_id' => $user->id])->paginate(10);
-
         return response()->json(['wishlists' => $wishlists]);
     }
-    public function partners(){
-
-        $partners = Partner::orderBy('serial','asc')->where(['status' => 1])->get();
-
-        return response()->json(['partners' => $partners]);
-    }
     public function products(){
-
         $products = Product::where(['status' => 1])->paginate(10);
-
         return response()->json(['products' => $products]);
     }
 
     public function getFooter()
     {
       $first_col_links = FooterLink::where('column',1)->get();
-
       $footer = Footer::first();
-
       $columnTitle = $footer->first_column;
-
       $footer_first_col = array(
-
           'col_links' => $first_col_links,
-
           'columnTitle' => $columnTitle
-
       );
-
       $footer_first_col = (object)$footer_first_col;
-
-
-
       $second_col_links = Blog::where(['status' => 1])->latest()->take(3)->get();
-
       $columnTitle = $footer->second_column;
-
       $footer_second_col = array(
-
           'col_links' => $second_col_links,
-
           'columnTitle' => $columnTitle
-
       );
-
       $footer_second_col = (object)$footer_second_col;
-
-
-
       $third_col_links = FooterLink::where('column',3)->get();
-
       $columnTitle = $footer->third_column;
-
       $footer_third_col = array(
-
           'col_links' => $third_col_links,
-
           'columnTitle' => $columnTitle
-
       );
-
       $footer_third_col = (object)$footer_third_col;
-
-
-
       $social_links = FooterSocialLink::all();
       return response()->json([
         'footer_first_col' => $footer_first_col,
-
         'footer_second_col' => $footer_second_col,
-
         'footer_third_col' => $footer_third_col,
-
         'footer' => $footer
       ]);
 
     }
 
     public function subCategoriesByCategory($id){
-
         $subCategories = Category::where(['parent_id' => $id, 'status' => 1])->get();
-
         return response()->json(['subCategories' => $subCategories]);
-
     }
-
-
-
-    public function childCategoriesBySubCategory($id){
-
-        $childCategories = ChildCategory::where(['sub_category_id' => $id, 'status' => 1])->get();
-
-        return response()->json(['childCategories' => $childCategories]);
-
-    }
-
-
 
     public function categoryList(){
-
         $categories = Category::where('status', 1)->get();
-
         return response()->json(['categories' => $categories]);
-
     }
 
     public function category($id){
-
         $category = Category::find($id);
-
         return response()->json(['category' => $category]);
-
     }
-
-
-
-
-
-    public function subCategory($id){
-
-        $sub_category = SubCategory::find($id);
-
-        return response()->json(['sub_category' => $sub_category]);
-
-    }
-
-
-
-    public function childCategory($id){
-
-        $child_category = ChildCategory::find($id);
-
-        return response()->json(['child_category' => $child_category]);
-
-    }
-
-
-
-
 
     public function productByCategory($id){
-
         $category = Category::find($id);
-
         $products = Product::with('attributes')->where(['category_id' => $id, 'approve_by_admin' => 1])->orderBy('id','desc')->get();
-
         return response()->json(['category' => $category, 'products' => $products]);
-
     }
 
 
@@ -387,21 +222,17 @@ class HomeController extends Controller
     {
       $sliders = Slider::orderBy('serial','asc')->where(['status' => 1])->get();
       return response()->json(['sliders' => $sliders]);
-
     }
 
     public function index()
-
     {
         $sliders = SliderResource::collection($this->sliderRepository->getSlides());
         $brands = Brand::where(['status' => 1])->get()->take(9);
         $topRatedProducts = ProductsResource::collection($this->productsRepository->getTopProducts(6));
         $newArrivalProducts = ProductsResource::collection($this->productsRepository->getNewArrivalProducts(6));
         $bestProducts = ProductsResource::collection($this->productsRepository->getBestProducts(6));
-        $seoSetting = SeoSetting::find(1);
         $homepage_categories = CategoryResource::collection($this->categoryRepository->getTopCategories());
         return response()->json([
-            'seoSetting' => $seoSetting,
             'sliders' => $sliders,
             'homepage_categories' => $homepage_categories,
             'brands' => $brands,
@@ -410,26 +241,6 @@ class HomeController extends Controller
             'bestProducts' => $bestProducts,
         ]);
     }
-
-    public function contactUs(){
-
-        $contact = ContactPage::first();
-
-        $seoSetting = SeoSetting::find(3);
-
-
-
-        return response()->json([
-
-            'contact' => $contact,
-
-            'seoSetting' => $seoSetting
-
-        ]);
-
-    }
-
-
 
     public function sendContactMessage(Request $request){
 
@@ -505,7 +316,7 @@ class HomeController extends Controller
 
     public function blog(Request $request){
 
-        $blogs = Blog::with('activeComments')->orderBy('id','desc')->where(['status' => 1]);
+        $blogs = Blog::orderBy('id','desc')->where(['status' => 1]);
 
 
 
@@ -527,13 +338,9 @@ class HomeController extends Controller
 
 
 
-        $blogs = $blogs->paginate($paginateQty);
+        $blogs = $blogs->paginate(15);
 
-        $seoSetting = SeoSetting::find(6);
-
-
-
-        return response()->json(['blogs' => $blogs, 'seoSetting' => $seoSetting]);
+        return response()->json(['blogs' => $blogs]);
 
     }
 
@@ -546,67 +353,10 @@ class HomeController extends Controller
         // $blog->views += 1;
 
         // $blog->save();
-
-
-
         $categories = BlogCategory::where(['status' => 1])->get();
-
-
-
-        $activeComments =[];
-        if ($blog) {
-          $activeComments = BlogComment::where('blog_id', $blog->id)->orderBy('id','desc')->paginate(15);
-        }
-
-
-
-        return response()->json(['blog' => $blog, 'categories' => $categories, 'activeComments' => $activeComments]);
+        return response()->json(['blog' => $blog, 'categories' => $categories]);
 
     }
-
-
-
-    public function blogComment(Request $request){
-
-        $rules = [
-
-            'name'=>'required',
-
-            'email'=>'required',
-
-            'comment'=>'required',
-
-            'blog_id'=>'required',
-
-        ];
-
-        $this->validate($request, $rules);
-
-
-
-        $comment = new BlogComment();
-
-        $comment->blog_id = $request->blog_id;
-
-        $comment->name = $request->name;
-
-        $comment->email = $request->email;
-
-        $comment->comment = $request->comment;
-
-        $comment->save();
-
-
-
-        $notification = trans('user_validation.Blog comment submited successfully');
-
-
-
-        return response()->json(['message' => $notification],200);
-
-    }
-
-
 
     public function faq(){
 
@@ -658,15 +408,12 @@ class HomeController extends Controller
         $brands = Brand::where(['status' => 1])->select('id', 'name', 'slug')->get();
         $activeVariants = ProductVariant::with('activeVariantItems')->select('name','id')->groupBy('name')->get();
 
-        $seoSetting = SeoSetting::find(9);
-
         // Prepare response
         return response()->json([
             'categories' => $categories,
             'activeVariants' => $activeVariants,
             'brands' => $brands,
-            'products' => $products,
-            'seoSetting' => $seoSetting,
+            'products' => $products
         ]);
     }
 
@@ -801,7 +548,6 @@ class HomeController extends Controller
 
 
 
-        $popularCategoryArr = [];
 
         if($request->highlight){
 
@@ -883,7 +629,7 @@ class HomeController extends Controller
 
 
 
-        $products = $products->select('id','name', 'short_name', 'slug', 'thumb_image','qty','sold_qty', 'price', 'offer_price','is_undefine','is_featured','new_product', 'is_top', 'is_best','category_id','sub_category_id','child_category_id','brand_id');
+        $products = $products->select('id','name', 'short_name', 'slug', 'thumb_image','qty','sold_qty', 'price', 'offer_price','is_undefine','is_featured','new_product', 'is_top', 'is_best','brand_id');
 
         if($request->per_page){
 
@@ -952,7 +698,7 @@ class HomeController extends Controller
     }
     public function productDetail($slug){
 
-        $product = Product::where('slug' , $slug)->with('brand','gallery','specifications','reviews','attributes')->first();
+        $product = Product::where('slug' , $slug)->with('brand','gallery','specifications','attributes')->first();
 
         if(!$product){
 
@@ -962,13 +708,8 @@ class HomeController extends Controller
 
         }
 
-        if (!empty($product->child_category_id)) {
-          $relatedProducts = Product::where(['child_category_id' => $product->child_category_id, 'status' => 1,'approve_by_admin' => 1])->where('id' , '!=', $product->id)->get()->take(3);
-        }elseif (!empty($product->sub_category_id)) {
-          $relatedProducts = Product::where(['sub_category_id' => $product->sub_category_id, 'status' => 1,'approve_by_admin' => 1])->where('id' , '!=', $product->id)->get()->take(3);
-        }else {
-          $relatedProducts = Product::where(['category_id' => $product->category_id, 'status' => 1,'approve_by_admin' => 1])->where('id' , '!=', $product->id)->get()->take(3);
-        }
+
+      $relatedProducts = Product::where(['category_id' => $product->category_id, 'status' => 1,'approve_by_admin' => 1])->where('id' , '!=', $product->id)->get()->take(3);
 
         return response()->json([
 

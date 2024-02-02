@@ -101,27 +101,6 @@
                         @endif
                         </address>
                       </div>
-
-                      @if ($order->deliveryman)
-                      <div class="col-md-6">
-                        <address>
-                          <strong>{{__('Delivery Man Information')}}:</strong><br>
-                          {{__('Name')}}: {{ $order->deliveryman->fname }} {{ $order->deliveryman->lname }}<br>
-                          {{__('admin.Status')}} :
-                          @if ($order->order_request == 1)
-                          <span class="badge badge-success">{{__('Accept')}} </span>
-                          @elseif ($order->order_request == 2)
-                          <span class="badge badge-success">{{__('Ignore')}} </span>
-                          @elseif ($order->order_status == 3)
-                          <span class="badge badge-success">{{__('admin.Completed')}} </span>
-                          @elseif ($order->order_status == 4)
-                          <span class="badge badge-danger">{{__('admin.Declined')}} </span>
-                          @else
-                          <span class="badge badge-danger">{{__('No response')}}</span>
-                        @endif
-                        </address>
-                      </div>
-                      @endif
                     </div>
                   </div>
                 </div>
@@ -210,15 +189,6 @@
                               <option {{ $order->order_status == 4 ? 'selected' : '' }} value="4">{{__('admin.Declined')}}</option>
                             </select>
                           </div>
-                          <div class="form-group">
-                            <label for="">{{__('Assign Delivery Man')}}</label>
-                          <select name="delivery_man_id" id="" class="form-control select2">
-                            <option value="0" {{ $order->order_status == 0 ? 'selected' : '' }}>Select</option>
-                              @foreach ($deliverymans as $deliveryman)
-                              <option value="{{ $deliveryman->id }}" {{ $order->delivery_man_id == $deliveryman->id ? 'selected' : '' }}>{{ $deliveryman->fname }} {{ $deliveryman->lname }}</option>
-                              @endforeach
-                          </select>
-                        </div>
                           <button class="btn btn-primary" type="submit">{{__('admin.Update Status')}}</button>
                         </form>
                       </div>

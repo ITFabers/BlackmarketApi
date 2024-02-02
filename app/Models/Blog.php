@@ -16,15 +16,4 @@ class Blog extends Model
     public function admin(){
         return $this->belongsTo(Admin::class);
     }
-
-    public function comments(){
-        return $this->hasMany(BlogComment::class);
-    }
-
-    public function activeComments(){
-        return $this->hasMany(BlogComment::class)->where('status',1);
-    }
-
-
-
 }

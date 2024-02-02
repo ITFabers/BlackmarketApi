@@ -20,9 +20,6 @@ class CreateProductsTable extends Migration
             $table->string('slug');
             $table->string('thumb_image');
             $table->integer('user_id')->default(0);
-            $table->integer('category_id');
-            $table->integer('sub_category_id');
-            $table->integer('child_category_id');
             $table->integer('brand_id');
             $table->text('short_description');
             $table->longText('long_description');

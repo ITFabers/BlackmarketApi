@@ -5,7 +5,6 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
-use App\Models\Country;
 use App\Models\City;
 use App\Models\Order;
 use App\Models\OrderProduct;

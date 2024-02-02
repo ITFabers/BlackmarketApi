@@ -8,15 +8,11 @@ use App\Imports\ProductImport;
 use App\Models\Admin;
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\CompareProduct;
-use App\Models\FlashSaleProduct;
 use App\Models\Notification;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductGallery;
-use App\Models\ProductReport;
-use App\Models\ProductReview;
 use App\Models\ProductSpecification;
 use App\Models\ProductSpecificationKey;
 use App\Models\ProductSubcategory;
@@ -381,9 +377,6 @@ class ProductController extends Controller
             }
         }
         ProductAttribute::where('product_id',$id)->delete();
-        FlashSaleProduct::where('product_id',$id)->delete();
-        ProductReport::where('product_id',$id)->delete();
-        ProductReview::where('product_id',$id)->delete();
         ProductSpecification::where('product_id',$id)->delete();
         Wishlist::where('product_id',$id)->delete();
         $cartProducts = ShoppingCart::where('product_id',$id)->get();
@@ -391,7 +384,6 @@ class ProductController extends Controller
             ShoppingCartVariant::where('shopping_cart_id', $cartProduct->id)->delete();
             $cartProduct->delete();
         }
-        CompareProduct::where('product_id',$id)->delete();
 
         $notification = trans('admin_validation.Delete Successfully');
         $notification=array('messege'=>$notification,'alert-type'=>'success');

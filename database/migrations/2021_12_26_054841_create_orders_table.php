@@ -38,7 +38,6 @@ class CreateOrdersTable extends Migration
             $table->string('order_delivered_date')->nullable();
             $table->string('order_completed_date')->nullable();
             $table->string('order_declined_date')->nullable();
-            $table->integer('delivery_man_id')->default(0);
             $table->integer('order_request')->default(0);
             $table->date('order_req_date')->nullable();
             $table->date('order_req_accept_date')->nullable();

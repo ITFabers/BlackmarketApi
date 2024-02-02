@@ -99,95 +99,6 @@ $(function() {
     });
 
 
-    //*==========FLASH SELL SLIDER=========
-    $('.flash_sell_slider').slick({
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 4000,
-        dots: false,
-        arrows: true,
-        nextArrow: '<i class="fas fa-chevron-right nxt_arr"></i>',
-        prevArrow: '<i class="fas fa-chevron-left prv_arr"></i>',
-
-        responsive: [{
-                breakpoint: 1200,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 992,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 576,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                }
-            }
-        ]
-    });
-
-
-
-    //*======HOT DETAILS SLIDER=====
-    $('.hot_deals_slider').slick({
-        slidesToShow: 2,
-        slidesToScroll: 1,
-        autoplay: false,
-        autoplaySpeed: 4000,
-        dots: false,
-        arrows: true,
-        nextArrow: '<i class="fas fa-chevron-right nxt_arr"></i>',
-        prevArrow: '<i class="fas fa-chevron-left prv_arr"></i>',
-
-        responsive: [{
-                breakpoint: 1200,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 992,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 576,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                }
-            }
-        ]
-    });
-
-
-
-
     //*======BANNER SLIDER=====
     $('.modal_slider').slick({
         slidesToShow: 1,
@@ -320,16 +231,6 @@ $(function() {
         hours: 0,
         minutes: 0,
         seconds: 0,
-        enableUtc: false
-    });
-
-    simplyCountdown('.campaign-details', {
-        year: campaign_end_year,
-        month: campaign_end_month,
-        day: campaign_end_date,
-        hours: campaign_hour,
-        minutes: campaign_min,
-        seconds: campaign_sec,
         enableUtc: false
     });
 

@@ -23,11 +23,6 @@
                                 <div class="col-12 col-sm-12 col-md-3">
                                     <ul class="nav nav-pills flex-column" id="myTab4" role="tablist">
 
-
-                                        <li class="nav-item border rounded mb-1">
-                                            <a class="nav-link active" id="general-setting-tab" data-toggle="tab" href="#generalSettingTab" role="tab" aria-controls="generalSettingTab" aria-selected="true">{{__('admin.General Setting')}}</a>
-                                        </li>
-
                                         <li class="nav-item border rounded mb-1">
                                             <a class="nav-link" id="logo-tab" data-toggle="tab" href="#logoTab" role="tab" aria-controls="logoTab" aria-selected="true">{{__('admin.Logo and Favicon')}}</a>
                                         </li>
@@ -42,86 +37,6 @@
                                 <div class="col-12 col-sm-12 col-md-9">
                                     <div class="border rounded">
                                         <div class="tab-content no-padding" id="settingsContent">
-
-                                            <div class="tab-pane fade show active" id="generalSettingTab" role="tabpanel" aria-labelledby="general-setting-tab">
-                                                <div class="card m-0">
-                                                    <div class="card-body">
-                                                      <form action="{{ route('admin.update-general-setting') }}" method="POST" enctype="multipart/form-data">
-                                                          @csrf
-                                                          @method('PUT')
-
-                                                          <div class="form-group">
-                                                              <label for="">{{__('admin.Frontend Root URL')}} </label>
-                                                              <input type="text" value="{{ $setting->frontend_url }}" class="form-control" name="frontend_url">
-                                                          </div>
-
-                                                          <div class="form-group">
-                                                            <label for="">{{__('admin.Phone number required on the register page')}}</label>
-                                                            <select name="phone_number_required" id="" class="form-control">
-                                                                <option {{ $setting->phone_number_required == 1 ? 'selected' : '' }} value="1">{{__('admin.Enable')}}</option>
-                                                                <option {{ $setting->phone_number_required == 0 ? 'selected' : '' }} value="0">{{__('admin.Disable')}}</option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="">{{__('admin.Default Phone Code')}}</label>
-                                                            <select name="default_phone_code" id="default_phone_code" class="form-control select2">
-
-                                                            </select>
-                                                        </div>
-
-
-                                                          <div class="form-group">
-                                                              <label for="">{{__('admin.Layout')}}</label>
-                                                              <select name="layout" id="" class="form-control">
-                                                                  <option {{ $setting->text_direction == 'rtl' ? 'selected' : '' }} value="rtl">{{__('admin.RTL (right to left)')}}</option>
-                                                                  <option {{ $setting->text_direction == 'ltr' ? 'selected' : '' }} value="ltr">{{__('admin.LTR (left to right)')}}</option>
-                                                              </select>
-                                                          </div>
-
-
-                                                          <div class="form-group">
-                                                              <label for="">{{__('admin.Sidebar Large Header')}}</label>
-                                                              <input type="text" name="lg_header" class="form-control" value="{{ $setting->sidebar_lg_header }}">
-                                                          </div>
-
-                                                          <div class="form-group">
-                                                              <label for="">{{__('admin.Sidebar Small Header')}}</label>
-                                                              <input type="text" name="sm_header" class="form-control" value="{{ $setting->sidebar_sm_header }}">
-                                                          </div>
-
-                                                          <div class="form-group">
-                                                              <label for="">{{__('admin.Contact Email')}}</label>
-                                                              <input type="email" name="contact_email" class="form-control" value="{{ $setting->contact_email }}">
-                                                          </div>
-
-
-                                                          <div class="form-group">
-                                                              <label for="">{{__('admin.Default Currency Name')}}</label>
-                                                              <select name="currency_name" id="" class="form-control select2">
-                                                                  <option value="">{{__('admin.Select Default Currency')}}
-                                                                </option>
-                                                                @foreach ($currencies as $currency)
-                                                                <option {{ $setting->currency_name == $currency->code ? 'selected' : '' }} value="{{ $currency->code }}">{{ $currency->code }}
-                                                                </option>
-                                                                @endforeach
-                                                              </select>
-                                                          </div>
-
-
-                                                          <div class="form-group">
-                                                              <label for="">{{__('admin.Currency Icon')}}</label>
-                                                              <input type="text" name="currency_icon" class="form-control" value="{{ $setting->currency_icon }}">
-                                                          </div>
-
-
-
-                                                          <button class="btn btn-primary" type="submit">{{__('admin.Update')}}</button>
-
-                                                      </form>
-                                                    </div>
-                                                </div>
-                                            </div>
 
                                             <div class="tab-pane fade" id="logoTab" role="tabpanel" aria-labelledby="logo-tab">
                                                 <div class="card m-0">

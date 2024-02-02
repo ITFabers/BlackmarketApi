@@ -45,19 +45,6 @@
                         </div>
                         <div class="col-xl-6 col-md-6">
                             <div class="wsus__add_address_single">
-                                <label>{{__('state')}} <b>*</b></label>
-                                <div class="wsus__topbar_select">
-                                    <select class="select_2" name="state" id="state_id">
-                                        <option value="0">{{__('Select State')}}</option>
-                                        @foreach ($states as $state)
-                                            <option {{ $state->id == $shipping->state_id ? 'selected' : '' }} value="{{ $state->id }}">{{ $state->name }}</option>
-                                        @endforeach
-                                    </select>
-                            </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-md-6">
-                            <div class="wsus__add_address_single">
                                 <label>{{__('city')}} <b>*</b></label>
                                 <div class="wsus__topbar_select">
                                     <select class="select_2" name="city" id="city_id">
@@ -115,19 +102,6 @@
                         </div>
                         <div class="col-xl-6 col-md-6">
                             <div class="wsus__add_address_single">
-                                <label>{{__('state')}} <b>*</b></label>
-                                <div class="wsus__topbar_select">
-                                    <select class="select_2" name="state" id="state_id">
-                                        <option value="0">{{__('Select State')}}</option>
-                                        @foreach ($states as $state)
-                                            <option value="{{ $state->id }}">{{ $state->name }}</option>
-                                        @endforeach
-                                    </select>
-                            </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-md-6">
-                            <div class="wsus__add_address_single">
                                 <label>{{__('city')}} <b>*</b></label>
                                 <div class="wsus__topbar_select">
                                     <select class="select_2" name="city" id="city_id">
@@ -167,50 +141,8 @@
     (function($) {
         "use strict";
         $(document).ready(function () {
-
-            $("#country_id").on("change",function(){
-                var countryId = $("#country_id").val();
-                if(countryId){
-                    $.ajax({
-                        type:"get",
-                        url:"{{url('/user/state-by-country/')}}"+"/"+countryId,
-                        success:function(response){
-                            $("#state_id").html(response.states);
-                            var response= "<option value=''>{{__('Select a City')}}</option>";
-                            $("#city_id").html(response);
-                        },
-                        error:function(err){
-                        }
-                    })
-                }else{
-                    var response= "<option value=''>{{__('Select a State')}}</option>";
-                    $("#state_id").html(response);
-                    var response= "<option value=''>{{__('Select a City')}}</option>";
-                    $("#city_id").html(response);
-                }
-
-            })
-
-            $("#state_id").on("change",function(){
-                var countryId = $("#state_id").val();
-                if(countryId){
-                    $.ajax({
-                        type:"get",
-                        url:"{{url('/user/city-by-state/')}}"+"/"+countryId,
-                        success:function(response){
-                            $("#city_id").html(response.cities);
-                        },
-                        error:function(err){
-                        }
-                    })
-                }else{
-                    var response= "<option value=''>{{__('Select a City')}}</option>";
-                    $("#city_id").html(response);
-                }
-
-            })
-
-
+            var response= "<option value=''>{{__('Select a City')}}</option>";
+            $("#city_id").html(response);
         });
     })(jQuery);
 </script>

@@ -1,10 +1,8 @@
 @php
     $setting = App\Models\Setting::first();
     $productCategories = App\Models\Category::where(['status' => 1])->get();
-    $megaMenuBanner = App\Models\BannerImage::find(1);
     $modalProducts = App\Models\Product::all();
     $currencySetting = App\Models\Setting::first();
-    $googleAnalytic = App\Models\GoogleAnalytic::first();
 @endphp
 
 <!DOCTYPE html>
@@ -66,13 +64,6 @@
         var end_year = '';
         var end_month = '';
         var end_date = '';
-        var capmaign_time = '';
-        var campaign_end_year = ''
-        var campaign_end_month = ''
-        var campaign_end_date = ''
-        var campaign_hour = ''
-        var campaign_min = ''
-        var campaign_sec = ''
         var productIds = [];
         var productYears = [];
         var productMonths = [];
@@ -192,12 +183,7 @@
 
                             </a></li>
                             @endif
-                            @if ($menus->where('id',20)->first()->status == 1)
-                            <li><a href="{{ route('compare') }}"><i class="far fa-random"></i>
-                                <span id="compareQty">{{ Cart::instance('compare')->count() }}</span>
 
-                            </a></li>
-                            @endif
 
                             @if ($menus->where('id',19)->first()->status == 1)
                             <li><a class="wsus__cart_icon" href="javascript:;"><i
@@ -274,28 +260,7 @@
 
                     <ul class="wsus_menu_cat_item show_home toggle_menu">
                         @foreach ($productCategories as $productCategory)
-                            @if ($productCategory->subCategories->count() == 0)
-                                <li><a href="{{ route('product',['category' => $productCategory->slug]) }}"><i class="{{ $productCategory->icon }}"></i> {{ $productCategory->name }}</a></li>
-                            @else
-                                <li><a class="wsus__droap_arrow" href="{{ route('product',['category' => $productCategory->slug]) }}"><i class="{{ $productCategory->icon }}"></i> {{ $productCategory->name }} </a>
-                                    <ul class="wsus_menu_cat_droapdown">
-                                        @foreach ($productCategory->subCategories as $subCategory)
-                                            @if ($subCategory->childCategories->count() == 0)
-                                                <li><a href="{{ route('product',['sub_category' => $subCategory->slug]) }}">{{ $subCategory->name }}</a></li>
-                                            @else
-                                                <li><a href="{{ route('product',['sub_category' => $subCategory->slug]) }}">{{ $subCategory->name }} <i class="fas fa-angle-right"></i></a>
-                                                    <ul class="wsus__sub_category">
-                                                        @foreach ($subCategory->childCategories as $childCategory)
-                                                            <li><a href="{{ route('product',['child_category' => $childCategory->slug]) }}">{{ $childCategory->name }}</a> </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </li>
-                                            @endif
-
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            @endif
+                            <li><a href="{{ route('product',['category' => $productCategory->slug]) }}"><i class="{{ $productCategory->icon }}"></i> {{ $productCategory->name }}</a></li>
                         @endforeach
                     </ul>
 
@@ -312,46 +277,13 @@
                              <i class="fas fa-caret-down"></i>
                             @endif
                             </a>
-                            @if ($menus->where('id',3)->first()->status == 1)
-                            <div class="wsus__mega_menu">
-                                <div class="row">
-                                    @foreach ($megaMenuCategories as $megaMenuCategory)
-                                        <div class="col-xl-3 col-lg-4">
-                                            <div class="wsus__mega_menu_colum">
-                                                <h4><a class="text-dark" href="{{ route('product',['category' => $megaMenuCategory->category->slug]) }}">{{ $megaMenuCategory->category->name }}</a></h4>
-                                                <ul class="wsis__mega_menu_item">
-                                                    @foreach ($megaMenuCategory->subCategories as $subCategory)
-                                                    <li><a href="{{ route('product',['sub_category' => $subCategory->subCategory->slug]) }}">{{ $subCategory->subCategory->name }} </a></li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    @endforeach
-
-                                    @if ($megaMenuBanner->status == 1)
-                                    <div class="col-xl-3 d-lg-none d-xl-block">
-                                        <div class="wsus__mega_menu_colum">
-                                            <img src="{{ asset($megaMenuBanner->image) }}" alt="images" class="img-fluid w-100">
-                                            <div class="wsus__mega_menu_colum_text">
-                                                <h5>{{ $megaMenuBanner->title }}</h5>
-                                                <h3>{{ $megaMenuBanner->description }}</h3>
-                                                <a class="common_btn" href="{{ $megaMenuBanner->link }}">{{__('Shop Now')}}</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                            @endif
                         </li>
                         @endif
 
                         @if ($menus->where('id',5)->first()->status == 1)
                         <li><a href="{{ route('blog') }}">{{__('Blog')}}</a></li>
                         @endif
-                        @if ($menus->where('id',6)->first()->status == 1)
-                        <li><a href="{{ route('campaign') }}">{{__('Campaign')}}</a></li>
-                        @endif
+
                         @if ($menus->where('id',7)->first()->status == 1)
                         <li class="wsus__relative_li"><a href="javascript:;">{{__('Pages')}} <i class="fas fa-caret-down"></i></a>
                             <ul class="wsus__menu_droapdown">
@@ -384,14 +316,6 @@
                         </li>
                         @endif
                     </ul>
-                    <ul class="wsus__menu_item wsus__menu_item_right ms-auto">
-                        @if ($menus->where('id',15)->first()->status == 1)
-                        <li><a href="{{ route('track-order') }}">{{__('Track Order')}}</a></li>
-                        @endif
-                        @if ($menus->where('id',16)->first()->status == 1)
-                        <li><a href="{{ route('flash-deal') }}">{{__('Flash Deal')}}</a></li>
-                        @endif
-                    </ul>
                 </div>
             </div>
         </div>
@@ -419,9 +343,7 @@
             </a></li>
             @endif
 
-            @if ($menus->where('id',20)->first()->status == 1)
-            <li><a href="{{ route('compare') }}"><i class="far fa-random"></i><span id="mobileMenuCompareQty">{{ Cart::instance('compare')->count() }}</span></a></li>
-            @endif
+
         </ul>
         @if ($menus->where('id',25)->first()->status == 1)
         <form action="{{ route('product') }}">
@@ -484,31 +406,11 @@
                             <li><a href="{{ route('home') }}">{{__('Home')}}</a></li>
                             @endif
                             @if ($menus->where('id',2)->first()->status == 1)
-                                @if ($menus->where('id',3)->first()->status == 1)
-                                <li><a href="{{ route('product') }}" class="accordion-button collapsed" data-bs-toggle="collapse"
-                                        data-bs-target="#flush-collapseThree" aria-expanded="false"
-                                        aria-controls="flush-collapseThree">{{__('Shop')}}</a>
-                                    <div id="flush-collapseThree" class="accordion-collapse collapse"
-                                        data-bs-parent="#accordionFlushExample2">
-                                        <div class="accordion-body">
-                                            <ul>
-                                                @foreach ($megaMenuCategories as $megaMenuCategory)
-                                                <li><a href="{{ route('product',['category' => $megaMenuCategory->category->slug]) }}">{{ $megaMenuCategory->category->name }}</a></li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
-                                @else
                                 <li><a href="{{ route('product') }}">{{__('Shop')}}</a></li>
-                                @endif
                             @endif
 
                             @if ($menus->where('id',5)->first()->status == 1)
                             <li><a href="{{ route('blog') }}">{{__('Blog') }}</a></li>
-                            @endif
-                            @if ($menus->where('id',6)->first()->status == 1)
-                            <li><a href="{{ route('campaign') }}">{{__('Campain')}}</a></li>
                             @endif
                             @if ($menus->where('id',7)->first()->status == 1)
                             <li><a href="#" class="accordion-button collapsed" data-bs-toggle="collapse"
@@ -549,12 +451,6 @@
                                 </div>
                             </li>
                             @endif
-                            @if ($menus->where('id',15)->first()->status == 1)
-                            <li><a href="{{ route('track-order') }}">{{__('Track Order')}}</a></li>
-                            @endif
-                            @if ($menus->where('id',16)->first()->status == 1)
-                            <li><a href="{{ route('flash-deal') }}">{{__('Flash Deal')}}</a></li>
-                            @endif
                         </ul>
                     </div>
                 </div>
@@ -569,45 +465,6 @@
     <!--==========================
            POP UP START
     ===========================-->
-
-    @if ($announcementModal->status)
-    <section id="wsus__pop_up">
-        <div class="wsus__pop_up_center" style="background-image:url({{ asset($announcementModal->image) }})">
-            <div class="wsus__pop_up_text">
-                <span id="cross"><i class="fas fa-times"></i></span>
-                <h5>{{ $announcementModal->title }}</h5>
-                <p>{{ $announcementModal->description }}</p>
-                <form id="modalSubscribeForm">
-                    @csrf
-                    <input type="email" name="email" placeholder="{{__('Your Email')}}" class="news_input">
-                    <button type="submit" class="common_btn" id="modalSubscribeBtn"><i id="modal-subscribe-spinner" class="loading-icon fa fa-spin fa-spinner mr-3 d-none"></i> {{__('Subscribe')}}</button>
-                    <div class="wsus__pop_up_check_box"></div>
-                    </div>
-                </form>
-                <div class="form-check">
-                    <input type="hidden" id="announcement_expired_date" value="{{ $announcementModal->expired_date }}">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault11">
-                    <label class="form-check-label" for="flexCheckDefault11">
-                        {{ $announcementModal->footer_text }}
-                    </label>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        let isannouncementModal = sessionStorage.getItem("announcementModal");
-        let expirationDate = sessionStorage.getItem("announcementModalExpiration");
-        if(isannouncementModal && expirationDate){
-            let today = new Date();
-            today = today.toISOString().slice(0,10)
-            if(today < expirationDate){
-                $("#wsus__pop_up").addClass("d-none");
-            }
-        }
-    </script>
-
-    @endif
 
 
     @yield('public-content')
@@ -854,8 +711,6 @@
                                 let date = new Date();
                                 date.setDate(date.getDate() + expiredDate);
                                 let nextDate = date.toISOString().slice(0,10);
-                                sessionStorage.setItem("announcementModal", "yes");
-                                sessionStorage.setItem("announcementModalExpiration", nextDate);
                                 $("#cross").click();
 
                             }
@@ -874,17 +729,6 @@
                             $("#modalSubscribeBtn").attr('disabled',false);
                         }
                     });
-                })
-
-                $("#flexCheckDefault11").on("click", function(){
-                    let expiredDate = $("#announcement_expired_date").val();
-                    expiredDate = expiredDate*1;
-                    let date = new Date();
-                    date.setDate(date.getDate() + expiredDate);
-                    let nextDate = date.toISOString().slice(0,10);
-                    sessionStorage.setItem("announcementModal", "yes");
-                    sessionStorage.setItem("announcementModalExpiration", nextDate);
-                    $("#cross").click();
                 })
 
                 $("#subscriberForm").on('submit', function(e){
@@ -1111,29 +955,6 @@
                             $("#CartResponse").html(response)
                         },
                     });
-                },
-            });
-
-        }
-
-        function addToCompare(id){
-            $.ajax({
-                type: 'get',
-                url: "{{ url('add-to-compare') }}" + "/" + id,
-                success: function (response) {
-                    if(response.status == 1){
-                        toastr.success(response.message)
-                        let currentQty = $("#compareQty").text();
-                        currentQty = currentQty * 1 + 1*1;
-                        $("#compareQty").text(currentQty);
-
-                        let mobileMenuCurrentQty = $("#mobileMenuCompareQty").text();
-                        mobileMenuCurrentQty = mobileMenuCurrentQty *1 + 1*1;
-                        $("#mobileMenuCompareQty").text(mobileMenuCurrentQty);
-
-                    }else{
-                        toastr.error(response.message)
-                    }
                 },
             });
 

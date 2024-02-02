@@ -6,7 +6,6 @@ namespace App\Repositories;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
-use App\Models\PopularCategory;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Resources\ProductsResource;
@@ -53,7 +52,7 @@ class ProductsRepository extends FrontBaseRepository {
         }
         if(!empty($request->categories) && is_array($request->categories)) {
             $categories = $request->categories;
-            
+
             $query->whereHas('categories', function ($q) use ($categories) {
                 foreach($categories as $key => $value) {
                     if($key == 0) {
@@ -69,7 +68,7 @@ class ProductsRepository extends FrontBaseRepository {
 
         if (!empty($request->brand)) {
             $brand = Brand::where('slug', $request->brand)->firstOrFail();
-            $query->where('brand_id', $brand->id);                
+            $query->where('brand_id', $brand->id);
         }
         if(!empty($request->brands) && is_array($request->brands)) {
             $brands = $request->brands;
@@ -92,12 +91,6 @@ class ProductsRepository extends FrontBaseRepository {
     {
         if ($request->has('highlight')) {
             switch ($request->highlight) {
-                case 'popular_category':
-                    $categoryIds = PopularCategory::pluck('category_id');
-                    $query->whereHas('categories', function ($q) use ($categoryIds) {
-                        $q->whereIn('categories.id', $categoryIds);
-                    });
-                    break;
                 case 'top_product':
                     $query->where('is_top', 1);
                     break;

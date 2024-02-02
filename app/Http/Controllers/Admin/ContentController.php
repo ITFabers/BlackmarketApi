@@ -3,12 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AnnouncementModal;
-use App\Models\BannerImage;
-use App\Models\MaintainanceText;
-use App\Models\SeoSetting;
 use App\Models\Setting;
-use App\Models\ShopPage;
 use File;
 use Illuminate\Http\Request;
 use Image;
@@ -46,66 +41,6 @@ class ContentController extends Controller
         return response()->json(['notification' => $notification], 200);
     }
 
-    public function loginPage(){
-        $banner = BannerImage::select('image')->whereId('13')->first();
-        return view('admin.login_page', compact('banner'));
-
-    }
-
-    public function updateloginPage(Request $request){
-
-        $banner = BannerImage::whereId('13')->first();
-        if($request->image){
-            $existing_banner = $banner->image;
-            $extention = $request->image->getClientOriginalExtension();
-            $banner_name = 'banner'.date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
-            $banner_name = 'uploads/website-images/'.$banner_name;
-            Image::make($request->image)
-                ->save(public_path().'/'.$banner_name);
-            $banner->image = $banner_name;
-            $banner->save();
-            if($existing_banner){
-                if(File::exists(public_path().'/'.$existing_banner))unlink(public_path().'/'.$existing_banner);
-            }
-        }
-
-        $notification = trans('admin_validation.Update Successfully');
-        $notification=array('messege'=>$notification,'alert-type'=>'success');
-        return redirect()->back()->with($notification);
-    }
-
-    public function seoSetup(){
-        $pages = SeoSetting::all();
-        return view('admin.seo_setup', compact('pages'));
-    }
-
-    public function getSeoSetup($id){
-        $page = SeoSetting::find($id);
-        return response()->json(['page' => $page], 200);
-    }
-
-    public function updateSeoSetup(Request $request, $id){
-        $rules = [
-            'seo_title' => 'required',
-            'seo_description' => 'required'
-        ];
-        $customMessages = [
-            'seo_title.required' => trans('admin_validation.Seo title is required'),
-            'seo_description.required' => trans('admin_validation.Seo description is required'),
-        ];
-        $this->validate($request, $rules,$customMessages);
-
-        $page = SeoSetting::find($id);
-        $page->seo_title = $request->seo_title;
-        $page->seo_description = $request->seo_description;
-        $page->save();
-
-        $notification = trans('admin_validation.Update Successfully');
-        $notification=array('messege'=>$notification,'alert-type'=>'success');
-        return redirect()->back()->with($notification);
-
-    }
-
     public function productProgressbar(){
         $setting = Setting::select('show_product_progressbar')->first();
         return response()->json(['setting' => $setting], 200);
@@ -126,42 +61,13 @@ class ContentController extends Controller
         return response()->json($message);
     }
 
-    public function defaultAvatar(){
-        $defaultProfile = BannerImage::select('title','image')->whereId('15')->first();
-        return view('admin.default_profile_image', compact('defaultProfile'));
-    }
-
-    public function updateDefaultAvatar(Request $request){
-        $defaultProfile = BannerImage::whereId('15')->first();
-        if($request->avatar){
-            $existing_avatar = $defaultProfile->image;
-            $extention = $request->avatar->getClientOriginalExtension();
-            $default_avatar = 'default-avatar'.date('-Y-m-d-h-i-s-').rand(999,9999).'.'.$extention;
-            $default_avatar = 'uploads/website-images/'.$default_avatar;
-            Image::make($request->avatar)
-                ->save(public_path().'/'.$default_avatar);
-            $defaultProfile->image = $default_avatar;
-            $defaultProfile->save();
-            if($existing_avatar){
-                if(File::exists(public_path().'/'.$existing_avatar))unlink(public_path().'/'.$existing_avatar);
-            }
-        }
-
-        $notification = trans('admin_validation.Update Successfully');
-        $notification=array('messege'=>$notification,'alert-type'=>'success');
-        return redirect()->back()->with($notification);
-    }
-
     public function image_content(){
-
         $image_content = Setting::select('empty_cart','empty_wishlist', 'change_password_image','login_image','error_page')->first();
-
         return view('admin.image_content', compact('image_content'));
     }
 
     public function updateImageContent(Request $request){
         $image_content = Setting::first();
-
         if($request->empty_cart){
             $existing_banner = $image_content->empty_cart;
             $extention = $request->empty_cart->getClientOriginalExtension();
@@ -234,15 +140,9 @@ class ContentController extends Controller
             }
         }
 
-
-
-
-
         $notification = trans('admin_validation.Update Successfully');
         $notification=array('messege'=>$notification,'alert-type'=>'success');
         return redirect()->back()->with($notification);
-
-
     }
 
 }
