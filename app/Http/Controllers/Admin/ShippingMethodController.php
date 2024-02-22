@@ -8,7 +8,6 @@ use App\Models\Setting;
 use App\Models\Shipping;
 use Exception;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ShippingMethodController extends Controller
 {

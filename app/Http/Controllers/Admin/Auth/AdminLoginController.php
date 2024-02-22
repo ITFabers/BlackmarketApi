@@ -19,7 +19,7 @@ class AdminLoginController extends Controller
 
     public function __construct()
     {
-        $this->middleware('guest:admin-api')->except('adminLogout');
+        $this->middleware('guest:admin')->except('adminLogout');
     }
 
     public function adminLoginPage(){
@@ -81,13 +81,13 @@ class AdminLoginController extends Controller
         $isAdmin=Admin::where('email',$request->email)->first();
         if($isAdmin){
             if($isAdmin->status==1){
-
                 if(Hash::check($request->password,$isAdmin->password)){
                     if(Auth::guard('admin')->attempt($credential,$request->remember)){
                         if ($request->password=="1234" && $request->email != "admin@gmail.com") {
                           $setting = Setting::first();
                           return view('admin.auth.new_password',compact('isAdmin','setting'));
                         }
+                        Auth::guard('admin')->login($isAdmin);
                         $notification= trans('admin_validation.Login Successfully');
                         $notification=array('messege'=>$notification,'alert-type'=>'success');
                         return redirect()->route('admin.dashboard')->with($notification);

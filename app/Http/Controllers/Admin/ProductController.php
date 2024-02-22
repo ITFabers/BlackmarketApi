@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\Events\NewProductCreated;
-use App\Exports\ProductExport;
 use App\Http\Controllers\Controller;
-use App\Imports\ProductImport;
 use App\Models\Admin;
 use App\Models\Brand;
 use App\Models\Category;
@@ -26,7 +24,6 @@ use Exception;
 use File;
 use Illuminate\Http\Request;
 use Image;
-use Maatwebsite\Excel\Facades\Excel;
 use Str;
 
 class ProductController extends Controller
@@ -418,8 +415,6 @@ class ProductController extends Controller
         return response()->json($message);
     }
 
-
-
     public function removedProductExistSpecification($id){
         $productSpecification = ProductSpecification::find($id);
         $productSpecification->delete();
@@ -427,46 +422,6 @@ class ProductController extends Controller
         return response()->json($message);
     }
 
-
-
-
-    public function product_import_page()
-    {
-        return view('admin.product_import_page');
-    }
-
-    public function product_export()
-    {
-        $is_dummy = false;
-        return Excel::download(new ProductExport($is_dummy), 'products.xlsx');
-    }
-
-
-    public function demo_product_export()
-    {
-        $is_dummy = true;
-        return Excel::download(new ProductExport($is_dummy), 'products.xlsx');
-    }
-
-
-
-    public function product_import(Request $request)
-    {
-        try{
-            Excel::import(new ProductImport, $request->file('import_file'));
-
-            $notification=trans('Uploaded Successfully');
-            $notification=array('messege'=>$notification,'alert-type'=>'success');
-            return redirect()->back()->with($notification);
-
-        }catch(Exception $ex){
-            $notification=trans('Please follow the instruction and input the value carefully');
-            $notification=array('messege'=>$notification,'alert-type'=>'error');
-            return redirect()->back()->with($notification);
-        }
-
-
-    }
     public function getSubcategories($id)
     {
         $subcategories = Category::where('parent_id', $id)->get();

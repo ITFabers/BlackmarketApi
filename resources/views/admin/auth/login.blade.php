@@ -15,7 +15,6 @@
               <div class="card-body">
                 <form class="needs-validation" novalidate="" action="{{ route('admin.login') }}" method="POST">
                     @csrf
-
                   <div class="form-group">
                     <label for="email">{{__('admin.Email')}}</label>
                     <input id="email exampleInputEmail" type="text" class="form-control" name="email" tabindex="1" autofocus value="{{ old('email') }}">

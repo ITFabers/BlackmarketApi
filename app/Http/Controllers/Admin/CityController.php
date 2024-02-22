@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\City;
 use Exception;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 use Str;
 
 class CityController extends Controller
@@ -115,44 +114,5 @@ class CityController extends Controller
             $message = trans('admin_validation.Active Successfully');
         }
         return response()->json($message);
-    }
-
-
-    public function city_import_page()
-    {
-        return view('admin.city_import_page');
-    }
-
-    public function city_export()
-    {
-        $is_dummy = false;
-        return Excel::download(new CityExport($is_dummy), 'cities.xlsx');
-    }
-
-
-    public function demo_city_export()
-    {
-        $is_dummy = true;
-        return Excel::download(new CityExport($is_dummy), 'cities.xlsx');
-    }
-
-
-    public function city_import(Request $request)
-    {
-
-        try {
-            Excel::import(new CityImport, $request->file('import_file'));
-
-            $notification = trans('Uploaded Successfully');
-            $notification = array('messege' => $notification, 'alert-type' => 'success');
-            return redirect()->back()->with($notification);
-
-        } catch (Exception $ex) {
-            $notification = trans('Please follow the instruction and input the value carefully');
-            $notification = array('messege' => $notification, 'alert-type' => 'error');
-            return redirect()->back()->with($notification);
-        }
-
-
     }
 }

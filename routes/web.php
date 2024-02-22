@@ -20,7 +20,6 @@ use App\Http\Controllers\Admin\FooterSocialLinkController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\PrivacyPolicyController;
 use App\Http\Controllers\Admin\ProductBrandController;
 use App\Http\Controllers\Admin\ProductCategoryController;
@@ -79,11 +78,6 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::put('removed-product-exist-specification/{id}', [ProductController::class, 'removedProductExistSpecification'])->name('removed-product-exist-specification');
         Route::get('get-variant-items', [ProductController::class, 'getVariantItems'])->name('get-variant-items');
 
-        Route::get('product-import-page', [ProductController::class, 'product_import_page'])->name('product-import-page');
-        Route::get('product-export', [ProductController::class, 'product_export'])->name('product-export');
-        Route::get('product-demo-export', [ProductController::class, 'demo_product_export'])->name('product-demo-export');
-        Route::post('product-import', [ProductController::class, 'product_import'])->name('product-import');
-
         Route::resource('product-variant', ProductVariantController::class);
 
         Route::get('product-variant/{id}', [ProductVariantController::class, 'index'])->name('product-variant');
@@ -126,16 +120,13 @@ Route::group(['middleware' => ['XSS']], function () {
 
         Route::put('update-logo-favicon', [SettingController::class, 'updateLogoFavicon'])->name('update-logo-favicon');
 
-
         Route::resource('admin', AdminController::class);
         Route::put('admin-status/{id}', [AdminController::class, 'changeStatus'])->name('admin-status');
 
         Route::resource('faq', FaqController::class);
         Route::put('faq-status/{id}', [FaqController::class, 'changeStatus'])->name('faq-status');
 
-
         Route::resource('admin-list', AdminUsersController::class);
-
 
         Route::get('customer-list', [CustomerController::class, 'index'])->name('customer-list');
         Route::get('customer-show/{id}', [CustomerController::class, 'show'])->name('customer-show');
@@ -145,7 +136,6 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::get('send-email-to-all-customer', [CustomerController::class, 'sendEmailToAllUser'])->name('send-email-to-all-customer');
         Route::post('send-mail-to-all-user', [CustomerController::class, 'sendMailToAllUser'])->name('send-mail-to-all-user');
         Route::post('send-mail-to-single-user/{id}', [CustomerController::class, 'sendMailToSingleUser'])->name('send-mail-to-single-user');
-
 
         Route::get('topbar-contact', [ContentController::class, 'headerPhoneNumber'])->name('topbar-contact');
         Route::put('update-topbar-contact', [ContentController::class, 'updateHeaderPhoneNumber'])->name('update-topbar-contact');
@@ -162,8 +152,6 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::resource('city', CityController::class);
         Route::put('city-status/{id}', [CityController::class, 'changeStatus'])->name('city-status');
 
-        Route::get('payment-method', [PaymentMethodController::class, 'index'])->name('payment-method');
-        Route::put('update-cash-on-delivery', [PaymentMethodController::class, 'updateCashOnDelivery'])->name('update-cash-on-delivery');
 
         Route::resource('slider', SliderController::class);
         Route::put('slider-status/{id}', [SliderController::class, 'changeStatus'])->name('slider-status');
@@ -189,19 +177,14 @@ Route::group(['middleware' => ['XSS']], function () {
         Route::get('third-col-footer-link', [FooterLinkController::class, 'thirdColFooterLink'])->name('third-col-footer-link');
         Route::put('update-col-title/{id}', [FooterLinkController::class, 'updateColTitle'])->name('update-col-title');
 
-
         Route::get('admin-language', [LanguageController::class, 'adminLnagugae'])->name('admin-language');
         Route::post('update-admin-language', [LanguageController::class, 'updateAdminLanguage'])->name('update-admin-language');
 
         Route::get('admin-validation-language', [LanguageController::class, 'adminValidationLnagugae'])->name('admin-validation-language');
         Route::post('update-admin-validation-language', [LanguageController::class, 'updateAdminValidationLnagugae'])->name('update-admin-validation-language');
 
-
         Route::get('website-language', [LanguageController::class, 'websiteLanguage'])->name('website-language');
         Route::post('update-language', [LanguageController::class, 'updateLanguage'])->name('update-language');
-
-        Route::get('website-validation-language', [LanguageController::class, 'websiteValidationLanguage'])->name('website-validation-language');
-        Route::post('update-validation-language', [LanguageController::class, 'updateValidationLanguage'])->name('update-validation-language');
 
     });
 });
